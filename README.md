@@ -28,7 +28,7 @@
 
 # 下载
 
-
+https://github.com/zerorooot/nap6/releases/
 
 # 预览
 
