@@ -122,12 +122,15 @@ public class OffLineDownloadFragment extends Fragment {
             materialAlertDialogBuilder.setMessage("是否将文件保存至根目录?")
                     .setNegativeButton("取消", null)
                     .setPositiveButton("确定", (dialog, which) -> {
-                        fileViewModel.offLineDownload(path, collect);
+                        download(path, collect);
                     })
                     .show();
             return;
         }
+        download(path, collect);
+    }
 
+    private void download(String path, List<String> collect) {
         fileViewModel.offLineDownload(path, collect).observe(getViewLifecycleOwner(), i -> {
             if (i == collect.size()) {
                 Toast.makeText(getContext(), "离线下载成功", Toast.LENGTH_SHORT).show();
