@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <item
+        android:id="@+id/item_time"
+        android:title="按创建时间排序" />
+    <item
+        android:id="@+id/item_size"
+        android:title="按文件大小排序" />
+    <item
+        android:id="@+id/item_name"
+        android:title="按文件名称排序" />
+
+    <item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title=""
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />
+</menu>

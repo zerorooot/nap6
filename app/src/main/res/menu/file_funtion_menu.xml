@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/item_all"
+        android:icon="@drawable/ic_baseline_select_all_24"
+        android:showAsAction="always"
+        android:title="" />
+    <item
+        android:id="@+id/item_move"
+        android:icon="@drawable/ic_baseline_content_cut_24"
+        android:showAsAction="always"
+        android:title="移动" />
+    <item
+        android:id="@+id/item_download"
+        android:icon="@drawable/ic_baseline_arrow_circle_down_24"
+        android:showAsAction="always"
+        android:title="下载" />
+    <item
+        android:id="@+id/item_delete"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:showAsAction="always"
+        android:title="删除" />
+</menu>
