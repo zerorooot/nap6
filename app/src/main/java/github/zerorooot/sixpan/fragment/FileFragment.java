@@ -623,6 +623,8 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
     private void itemAll() {
         List<FileBean> value = liveData.getValue();
+        //记录位置，防止乱移
+        fileViewModel.setPosition(fileViewModel.getPath(), linearLayoutManager);
         assert value != null;
         value.forEach(s -> {
             s.setSelect(true);
