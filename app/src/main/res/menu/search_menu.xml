@@ -5,6 +5,9 @@
 
 
     <item
+        android:id="@+id/item_getAll"
+        android:title="获取所有的文件" />
+    <item
         android:id="@+id/item_time"
         android:title="按创建时间排序" />
     <item

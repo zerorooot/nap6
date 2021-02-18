@@ -75,17 +75,28 @@ public class FileViewModel extends AndroidViewModel {
         pathLiveDate.postValue(path);
     }
 
+    public void getAllFile(String parentPath) {
+        String url = ApiUrl.LIST;
+        JsonObject bodyJson = new JsonObject();
+        bodyJson.addProperty("parentPath", parentPath);
+        bodyJson.addProperty("limit", -1);
+        getFile(bodyJson, url);
+    }
     /**
      * 获取文件
      *
      * @param parentPath 文件路径
      */
-    public void getAllFile(String parentPath, int start, int limit) {
+    public void getFile(String parentPath, int start, int limit) {
         String url = ApiUrl.LIST;
         JsonObject bodyJson = new JsonObject();
         bodyJson.addProperty("parentPath", parentPath);
         bodyJson.addProperty("limit", limit);
         bodyJson.addProperty("start", start);
+        getFile(bodyJson, url);
+    }
+
+    private void getFile(JsonObject bodyJson, String url) {
         network(bodyJson, url).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -130,7 +141,6 @@ public class FileViewModel extends AndroidViewModel {
 
             }
         });
-
     }
 
     /**
@@ -201,7 +211,7 @@ public class FileViewModel extends AndroidViewModel {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     Toast.makeText(getApplication(), "重命名 " + fileBean.getName() + " -> " + newName + " 成功", Toast.LENGTH_SHORT).show();
                 });
-                getAllFile(fileBean.getParentPath(), 0, liveData.getValue() == null ? limitCount : liveData.getValue().size());
+                getFile(fileBean.getParentPath(), 0, liveData.getValue() == null ? limitCount : liveData.getValue().size());
             }
         });
     }

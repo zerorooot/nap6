@@ -111,7 +111,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fileViewModel.getAllFile("/", 0, fileViewModel.getLimitCount());
+        fileViewModel.getFile("/", 0, fileViewModel.getLimitCount());
         binding.swipeRefreshLayout.setRefreshing(true);
         liveData = fileViewModel.getLiveData();
 
@@ -163,7 +163,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                 if (!recyclerView.canScrollVertically(1) && dy > 0 && !search) {
                     binding.swipeRefreshLayout.setRefreshing(true);
                     fileViewModel.setPosition(fileViewModel.getPath(), linearLayoutManager);
-                    fileViewModel.getAllFile(fileViewModel.getPath(), adapter.getItemCount(), fileViewModel.getLimitCount());
+                    fileViewModel.getFile(fileViewModel.getPath(), adapter.getItemCount(), fileViewModel.getLimitCount());
                 }
             }
         });
@@ -242,7 +242,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         fileViewModel.getFileListCache().keySet().removeAll(filePathSet);
 
         liveData.setValue(null);
-        fileViewModel.getAllFile(path, 0, fileViewModel.getLimitCount());
+        fileViewModel.getFile(path, 0, fileViewModel.getLimitCount());
         //adapter.notifyDataSetChanged();
         fileViewModel.setPosition(path, linearLayoutManager);
         if (actionMode != null) {
@@ -347,6 +347,11 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 //            case android.R.id.home:
 //                onBackPressed(backPressedCallback);
 //                return true;
+            case R.id.item_getAll:
+                binding.swipeRefreshLayout.setRefreshing(true);
+                fileViewModel.getLiveData().postValue(null);
+                fileViewModel.getAllFile(binding.filePath.getText().toString());
+                return true;
             case R.id.item_name:
                 orderByName(firstBean, secondBean);
                 return true;
@@ -439,7 +444,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
         //更新
         liveData.setValue(null);
-        fileViewModel.getAllFile(fileBean.getPath(), 0, fileViewModel.getLimitCount());
+        fileViewModel.getFile(fileBean.getPath(), 0, fileViewModel.getLimitCount());
     }
 
     /**
@@ -726,7 +731,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
             return;
         }
         liveData.setValue(null);
-        fileViewModel.getAllFile(path, 0, fileViewModel.getLimitCount());
+        fileViewModel.getFile(path, 0, fileViewModel.getLimitCount());
 
     }
 

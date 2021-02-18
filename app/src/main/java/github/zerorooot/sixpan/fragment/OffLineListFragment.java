@@ -117,7 +117,7 @@ public class OffLineListFragment extends Fragment implements OffLineFileAdapter.
         if (offLineBean.isDirectory()) {
             fileViewModel.setPath(offLineBean.getAccessPath());
             fileViewModel.getLiveData().setValue(null);
-            fileViewModel.getAllFile(offLineBean.getAccessPath(), 0, fileViewModel.getLimitCount());
+            fileViewModel.getFile(offLineBean.getAccessPath(), 0, fileViewModel.getLimitCount());
             fileViewModel.getViewPager2().setCurrentItem(0);
             return;
         }

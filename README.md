@@ -31,6 +31,8 @@
 
 搜索状态下，全选会选择当时目录下的文件而非搜索出的文件
 
+全选文件时，位置会移动
+
 # 下载
 
 https://github.com/zerorooot/nap6/releases/
