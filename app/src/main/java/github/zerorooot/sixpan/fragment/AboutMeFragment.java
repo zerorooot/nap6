@@ -28,6 +28,7 @@ import java.util.Date;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.unit.DataSizeUtil;
+import github.zerorooot.sixpan.BuildConfig;
 import github.zerorooot.sixpan.MainActivity;
 import github.zerorooot.sixpan.bean.ApiUrl;
 import github.zerorooot.sixpan.bean.TokenBean;
@@ -48,15 +49,6 @@ public class AboutMeFragment extends Fragment {
     private FragmentAboutMeBinding binding;
     private MutableLiveData<UserInfoBean> liveData = new MutableLiveData<>();
     private FileViewModel fileViewModel;
-
-
-//    private AboutMeFragment() {
-//    }
-//
-//    public static AboutMeFragment newInstance() {
-//        AboutMeFragment fragment = new AboutMeFragment();
-//        return fragment;
-//    }
 
 
     @Override
@@ -106,7 +98,8 @@ public class AboutMeFragment extends Fragment {
         binding.mainOfflineDownloadCard.setOnClickListener(e -> {
             fileViewModel.getViewPager2().setCurrentItem(1);
         });
-
+        //版本信息
+        binding.versionTextView.setText("当前版本 : " + BuildConfig.VERSION_NAME);
     }
 
     private void getUserInfo() {
