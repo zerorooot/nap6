@@ -216,12 +216,13 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         adapter.submitList(fileBean);
         adapter.notifyItemChanged(adapter.getItemCount());
 
-        binding.filePath.setText(fileViewModel.getPath());
+        String path = fileViewModel.getPath();
+        binding.filePath.setText(path);
 
-        String path = binding.filePath.getText().toString();
-        fileViewModel.getFileListCache().put(path, fileBean);
-
-        fileViewModel.scroll(binding.filePath.getText().toString(), binding.recycleView);
+        if (!search) {
+            fileViewModel.getFileListCache().put(path, fileBean);
+            fileViewModel.scroll(binding.filePath.getText().toString(), binding.recycleView);
+        }
 
         if (binding.swipeRefreshLayout.isRefreshing()) {
             binding.swipeRefreshLayout.setRefreshing(false);
@@ -232,6 +233,11 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         if (search) {
             removeSearch();
         }
+
+        if (actionMode != null) {
+            actionMode.finish();
+        }
+
         if (!binding.floatingAddActionButton.isShown()) {
             binding.floatingAddActionButton.show();
         }
@@ -245,9 +251,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         fileViewModel.getFile(path, 0, fileViewModel.getLimitCount());
         //adapter.notifyDataSetChanged();
         fileViewModel.setPosition(path, linearLayoutManager);
-        if (actionMode != null) {
-            actionMode.finish();
-        }
+
     }
 
     private void floatingCutActionButtonClick(View v) {
@@ -315,14 +319,14 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     }
 
     private boolean search(String query) {
+        search = true;
         binding.swipeRefreshLayout.setRefreshing(true);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("搜索");
         String path = binding.filePath.getText().toString();
         fileViewModel.search(path, query).observe(getViewLifecycleOwner(), fileBean -> {
-            adapter.submitList(fileBean);
+            liveData.postValue(fileBean);
             binding.swipeRefreshLayout.setRefreshing(false);
         });
-        search = true;
         //阻止进一步处理
         searchView.onActionViewCollapsed();
         return true;
@@ -348,6 +352,9 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 //                onBackPressed(backPressedCallback);
 //                return true;
             case R.id.item_getAll:
+                if (search) {
+                    removeSearch();
+                }
                 binding.swipeRefreshLayout.setRefreshing(true);
                 fileViewModel.getLiveData().postValue(null);
                 fileViewModel.getAllFile(binding.filePath.getText().toString());
@@ -422,6 +429,10 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     private void gotoNext(FileBean fileBean) {
         binding.swipeRefreshLayout.setRefreshing(true);
 
+        if (search) {
+            removeSearch();
+        }
+
         if (!binding.floatingAddActionButton.isShown()) {
             binding.floatingAddActionButton.show();
         }
@@ -438,9 +449,6 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
             return;
         }
 
-        if (search) {
-            removeSearch();
-        }
 
         //更新
         liveData.setValue(null);
@@ -644,6 +652,10 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         if (!binding.floatingAddActionButton.isShown()) {
             binding.floatingAddActionButton.show();
         }
+        //清除搜索
+        if (search) {
+            onBackPressed(backPressedCallback);
+        }
     }
 
     private void itemDownload() {
@@ -669,6 +681,10 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         fileViewModel.delete(collect);
         //设置位置，防止排序删除的情况下xjb跑
         fileViewModel.setPosition(path, linearLayoutManager);
+        //清除搜索
+        if (search) {
+            onBackPressed(backPressedCallback);
+        }
     }
 
     public void onBackPressed(OnBackPressedCallback callback) {

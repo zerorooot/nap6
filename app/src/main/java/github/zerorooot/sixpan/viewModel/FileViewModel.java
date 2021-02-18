@@ -30,7 +30,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.unit.DataSizeUtil;
@@ -82,6 +84,7 @@ public class FileViewModel extends AndroidViewModel {
         bodyJson.addProperty("limit", -1);
         getFile(bodyJson, url);
     }
+
     /**
      * 获取文件
      *
@@ -386,9 +389,16 @@ public class FileViewModel extends AndroidViewModel {
                         Toast.makeText(getApplication().getApplicationContext(), "移动成功", Toast.LENGTH_SHORT).show();
                     });
                     liveData.postValue(true);
-                    //getAllFile(newPath);
-                    //updateCache(newPath);
-                    updateCache(fileBeanArrayList.get(0).getParentPath());
+
+
+                    Set<String> set = fileBeanArrayList.stream()
+                            .map(FileBean::getParentPath).collect(Collectors.toSet())
+                            //删除包含新路径的元素，因为外部会更新
+                            .stream().filter(s -> !s.equals(newPath)).collect(Collectors.toSet());
+                    set.forEach(s -> {
+                        updateCache(s);
+                    });
+//                    updateCache(fileBeanArrayList.get(0).getParentPath());
                 }
 
             }
