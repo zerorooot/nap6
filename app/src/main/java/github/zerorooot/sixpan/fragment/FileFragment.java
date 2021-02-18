@@ -5,12 +5,14 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateViewModelFactory;
@@ -76,6 +78,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     private boolean search = false;
     private boolean mBackKeyPressed = false;
 
+    private Menu menu;
     private static RecyclerViewOnScrollListener recyclerViewOnScrollListener = null;
 
     public interface RecyclerViewOnScrollListener {
@@ -230,6 +233,8 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     }
 
     private void swipeRefresh() {
+        clearMenuItemIcon();
+
         if (search) {
             removeSearch();
         }
@@ -304,6 +309,12 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.search_menu, menu);
+        //支持菜单图标
+        if (menu instanceof MenuBuilder) {
+            ((MenuBuilder) menu).setOptionalIconsVisible(true);
+        }
+        this.menu = menu;
+
         searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -332,9 +343,19 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         return true;
     }
 
+    private void clearMenuItemIcon() {
+        //排除搜索item
+        for (int i = 0; i < menu.size() - 1; i++) {
+            menu.getItem(i).setIcon(null);
+        }
+    }
+
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NotNull MenuItem item) {
+        //清除图片
+        clearMenuItemIcon();
+
         String path = binding.filePath.getText().toString();
         fileViewModel.setPosition(path, linearLayoutManager);
 
@@ -348,9 +369,6 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
         switch (item.getItemId()) {
             //处理左上角返回的逻辑在FileActivity,因为官方建议，且可能会存在不在此fragment里调用的情况，即点击后没反应
-//            case android.R.id.home:
-//                onBackPressed(backPressedCallback);
-//                return true;
             case R.id.item_getAll:
                 if (search) {
                     removeSearch();
@@ -360,41 +378,43 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                 fileViewModel.getAllFile(binding.filePath.getText().toString());
                 return true;
             case R.id.item_name:
-                orderByName(firstBean, secondBean);
+                orderByName(item, firstBean, secondBean);
                 return true;
             case R.id.item_size:
-                orderBySize(firstBean, secondBean);
+                orderBySize(item, firstBean, secondBean);
                 return true;
             case R.id.item_time:
-                orderByTime(firstBean, secondBean);
+                orderByTime(item, firstBean, secondBean);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void orderByTime(FileBean firstBean, FileBean secondBean) {
-        order(Comparator.comparing(FileBean::getAtime), firstBean.getAtime() > secondBean.getAtime());
+    private void orderByTime(MenuItem item, FileBean firstBean, FileBean secondBean) {
+        order(item, Comparator.comparing(FileBean::getAtime), firstBean.getAtime() > secondBean.getAtime());
     }
 
-    private void orderByName(FileBean firstBean, FileBean secondBean) {
-        order(Comparator.comparing(FileBean::getName), firstBean.getName().compareTo(secondBean.getName()) > 0);
+    private void orderByName(MenuItem item, FileBean firstBean, FileBean secondBean) {
+        order(item, Comparator.comparing(FileBean::getName), firstBean.getName().compareTo(secondBean.getName()) > 0);
     }
 
-    private void orderBySize(FileBean firstBean, FileBean secondBean) {
-        order(Comparator.comparing(FileBean::getSize), firstBean.getSize() > secondBean.getSize());
+    private void orderBySize(MenuItem item, FileBean firstBean, FileBean secondBean) {
+        order(item, Comparator.comparing(FileBean::getSize), firstBean.getSize() > secondBean.getSize());
     }
 
-    private void order(Comparator<FileBean> comparator, boolean condition) {
+    private void order(MenuItem item, Comparator<FileBean> comparator, boolean condition) {
         List<FileBean> collect;
         List<FileBean> value = liveData.getValue();
 
         if (condition) {
             collect = value.stream().sorted(comparator).collect(Collectors.toList());
             //imageView.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+            item.setIcon(R.drawable.ic_baseline_arrow_upward_24);
         } else {
             collect = value.stream().sorted(comparator.reversed()).collect(Collectors.toList());
             //imageView.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+            item.setIcon(R.drawable.ic_baseline_arrow_downward_24);
         }
 
 //        item.setActionView(imageView);
@@ -428,6 +448,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
     private void gotoNext(FileBean fileBean) {
         binding.swipeRefreshLayout.setRefreshing(true);
+        clearMenuItemIcon();
 
         if (search) {
             removeSearch();
@@ -691,6 +712,8 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     }
 
     public void onBackPressed(OnBackPressedCallback callback) {
+        clearMenuItemIcon();
+
         if (!searchView.isIconified()) {
             searchView.onActionViewCollapsed();
             return;
