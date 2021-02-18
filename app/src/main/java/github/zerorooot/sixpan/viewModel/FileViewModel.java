@@ -214,7 +214,12 @@ public class FileViewModel extends AndroidViewModel {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     Toast.makeText(getApplication(), "重命名 " + fileBean.getName() + " -> " + newName + " 成功", Toast.LENGTH_SHORT).show();
                 });
-                getFile(fileBean.getParentPath(), 0, liveData.getValue() == null ? limitCount : liveData.getValue().size());
+                int size = limitCount;
+                if (liveData.getValue() != null) {
+                    size = liveData.getValue().size();
+                }
+                liveData.postValue(null);
+                getFile(fileBean.getParentPath(), 0, size);
             }
         });
     }
