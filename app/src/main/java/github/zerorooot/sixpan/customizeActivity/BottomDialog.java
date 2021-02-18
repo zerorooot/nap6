@@ -3,6 +3,7 @@ package github.zerorooot.sixpan.customizeActivity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,6 +12,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,17 +138,28 @@ public class BottomDialog extends BaseBottomDialog {
     }
 
     private void showRenameDialog(Context c) {
-        EditText fileNameEditText = new EditText(c);
-        fileNameEditText.setText(currentFileBean.getName());
-        AlertDialog dialog = new AlertDialog.Builder(c)
-                .setTitle("重命名文件")
-                .setView(fileNameEditText)
-                .setPositiveButton("确定", (dialog1, which) -> {
-                    String newName = String.valueOf(fileNameEditText.getText());
-                    fileViewModel.rename(currentFileBean, newName);
-                })
+//        EditText fileNameEditText = new EditText(c);
+//        fileNameEditText.setText(currentFileBean.getName());
+//        AlertDialog dialog = new AlertDialog.Builder(c)
+//                .setTitle("重命名文件")
+//                .setView(fileNameEditText)
+//                .setPositiveButton("确定", (dialog1, which) -> {
+//                    String newName = String.valueOf(fileNameEditText.getText());
+//                    fileViewModel.rename(currentFileBean, newName);
+//                })
+//                .setNegativeButton("取消", null)
+//                .create();
+//        dialog.show();
+
+        TextInputEditText textInputEditText = new TextInputEditText(c);
+        textInputEditText.setText(currentFileBean.getName());
+        MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(requireContext());
+        materialAlertDialogBuilder.setTitle("重命名文件")
+                .setView(textInputEditText)
                 .setNegativeButton("取消", null)
-                .create();
-        dialog.show();
+                .setPositiveButton("确定", (dialog, which) -> {
+                    String newName = textInputEditText.getText().toString();
+                    fileViewModel.rename(currentFileBean, newName);
+                }).show();
     }
 }
