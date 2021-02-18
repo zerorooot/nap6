@@ -673,8 +673,11 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
         List<FileBean> arrayList = fileViewModel.getFileListCache().get(path);
         arrayList.removeAll(collect);
+        //仅不再搜索状态时刷新，因为当在搜索状态并删除后，会重新刷新数据
+        if (!search) {
+            adapter.notifyItemRangeRemoved(startPosition, collect.size());
+        }
 
-        adapter.notifyItemRangeRemoved(startPosition, collect.size());
         liveData.postValue(arrayList);
 
         //注意后台不会更新缓存，为了防止排序删除时排序打乱
