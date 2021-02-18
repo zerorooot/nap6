@@ -72,13 +72,11 @@ public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
     }
 
 
-    public float getVideoSpeed() {
-        return getCurrentPlayer().getSpeed();
-    }
-
     @Override
     protected void init(Context context) {
         super.init(context);
+        //恢复默认播放模式
+        GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_DEFAULT);
         initView();
     }
 
