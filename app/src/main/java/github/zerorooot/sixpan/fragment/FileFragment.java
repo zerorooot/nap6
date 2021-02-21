@@ -794,6 +794,10 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         if (!binding.floatingAddActionButton.isShown()) {
             binding.floatingAddActionButton.show();
         }
+        //清除搜索
+        if (search) {
+            onBackPressed(backPressedCallback);
+        }
     }
 
 
