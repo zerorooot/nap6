@@ -25,8 +25,8 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
             android:name=".activity.FileActivity"
+            android:alwaysRetainTaskState="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden" />
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

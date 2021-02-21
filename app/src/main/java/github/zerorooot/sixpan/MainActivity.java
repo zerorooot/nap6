@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferencesUtil sharedPreferencesUtil;
     private LoginViewModel loginViewModel;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        userName.setVisibility(View.VISIBLE);
-        password.setVisibility(View.VISIBLE);
-        button.setVisibility(View.VISIBLE);
         //
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             userName.setAutofillHints(View.AUTOFILL_HINT_USERNAME);
