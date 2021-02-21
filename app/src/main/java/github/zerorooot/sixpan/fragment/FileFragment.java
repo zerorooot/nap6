@@ -43,6 +43,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
@@ -705,6 +706,13 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         fileViewModel.delete(collect);
         //设置位置，防止排序删除的情况下xjb跑
         fileViewModel.setPosition(path, linearLayoutManager);
+        //清除缓存
+        collect.forEach(s -> {
+            if (fileViewModel.getFileListCache().get(s.getParentPath()) != null) {
+                fileViewModel.getFileListCache().get(s.getParentPath()).remove(s);
+            }
+        });
+
         //清除搜索
         if (search) {
             onBackPressed(backPressedCallback);
