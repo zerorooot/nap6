@@ -5,12 +5,12 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.fragment.app.Fragment;
@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -43,7 +44,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
@@ -62,7 +62,7 @@ import github.zerorooot.sixpan.viewModel.FileViewModel;
 
 
 public class FileFragment extends Fragment implements BottomDialog.BottomDialogInterface {
-    private FragmentFileBinding binding;
+    public FragmentFileBinding binding;
     private FileAdapter adapter;
     private FileViewModel fileViewModel;
     private MutableLiveData<List<FileBean>> liveData;
@@ -86,7 +86,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         void scrollListener(RecyclerView recyclerView, int dx, int dy);
     }
 
-    public FileFragment() {
+    private FileFragment() {
     }
 
     public static FileFragment newInstance() {
@@ -610,7 +610,6 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                 }
 
                 if (item.getItemId() == R.id.item_delete) {
-
                     List<FileBean> value = liveData.getValue();
                     if (value == null) {
                         Toast.makeText(requireContext(), "获取数据失败，请刷新后重试", Toast.LENGTH_SHORT).show();

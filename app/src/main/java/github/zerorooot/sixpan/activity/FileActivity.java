@@ -16,15 +16,23 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.databinding.ActivityFileBinding;
@@ -36,6 +44,8 @@ import github.zerorooot.sixpan.viewModel.FileViewModel;
 public class FileActivity extends AppCompatActivity implements FileFragment.RecyclerViewOnScrollListener {
     private ActivityFileBinding binding;
     private FileFragment fileFragment;
+    private boolean mBackKeyPressed = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +57,7 @@ public class FileActivity extends AppCompatActivity implements FileFragment.Recy
         FileViewModel fileViewModel = new ViewModelProvider(this, new SavedStateViewModelFactory(getApplication(), this)).get(FileViewModel.class);
         fileViewModel.setToken(token);
         fileViewModel.setViewPager2(binding.fileActivityViewpager2);
-         fileFragment = FileFragment.newInstance();
+        fileFragment = FileFragment.newInstance();
 
         //禁止左右滚动
         binding.fileActivityViewpager2.setUserInputEnabled(false);
@@ -77,6 +87,34 @@ public class FileActivity extends AppCompatActivity implements FileFragment.Recy
 
         //左上角返回
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //double click back to top
+        binding.fileActivityTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) {
+                    if (!mBackKeyPressed) {
+                        mBackKeyPressed = true;
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                mBackKeyPressed = false;
+                            }
+                        }, 3000);
+                    } else {
+                        fileFragment.binding.recycleView.smoothScrollToPosition(0);
+                    }
+                }
+            }
+        });
 
         new TabLayoutMediator(binding.fileActivityTabLayout, binding.fileActivityViewpager2, (tab, position) -> {
             switch (position) {
