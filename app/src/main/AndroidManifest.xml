@@ -19,9 +19,12 @@
         <activity
             android:name=".activity.VideoActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
+            android:taskAffinity=".activity.VideoActivityTask"
             android:supportsPictureInPicture="true"
-
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:autoRemoveFromRecents="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
             android:name=".activity.FileActivity"

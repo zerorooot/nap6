@@ -326,4 +326,11 @@ public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
         }, 100);
         new Handler(Looper.myLooper()).postDelayed(this::dismissProgressDialog, 600);
     }
+
+
+    public void playNext(String url, String title) {
+        setUp(url, mCache, null, title, true);
+        mTitleTextView.setText(title);
+        startPlayLogic();
+    }
 }

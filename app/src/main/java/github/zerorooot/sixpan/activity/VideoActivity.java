@@ -204,8 +204,10 @@ public class VideoActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         if (pip) {
-            videoPlayer.onVideoPause();
-            super.onBackPressed();
+            GSYVideoManager.releaseAllVideos();
+            if (orientationUtils != null) {
+                orientationUtils.releaseListener();
+            }
         }
         if (Objects.nonNull(dlnaDeviceManager)) {
             dlnaDeviceManager.stopDiscovery();
@@ -218,33 +220,6 @@ public class VideoActivity extends AppCompatActivity {
         if (!isInPictureInPictureMode()) {
             enterPictureInPictureMode();
         }
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (!isInPictureInPictureMode()) {
-            videoPlayer.onVideoPause();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        videoPlayer.onVideoResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        GSYVideoManager.releaseAllVideos();
-        if (orientationUtils != null) {
-            orientationUtils.releaseListener();
-        }
-        if (Objects.nonNull(dlnaDeviceManager)) {
-            dlnaDeviceManager.stopDiscovery();
-        }
     }
 
     @Override
@@ -254,5 +229,17 @@ public class VideoActivity extends AppCompatActivity {
         if (Objects.nonNull(dlnaDeviceManager)) {
             dlnaDeviceManager.stopDiscovery();
         }
+        GSYVideoManager.releaseAllVideos();
+        if (orientationUtils != null) {
+            orientationUtils.releaseListener();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        address = intent.getStringExtra("address");
+        String title = intent.getStringExtra("title");
+        videoPlayer.playNext(address, title);
     }
 }
