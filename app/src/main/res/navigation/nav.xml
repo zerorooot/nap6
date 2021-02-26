@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav"
+    app:startDestination="@id/checkFragment">
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="github.zerorooot.sixpan.fragment.LoginFragment"
+        android:label="登录"
+        tools:layout="@layout/fragment_login" />
+    <fragment
+        android:id="@+id/checkFragment"
+        android:name="github.zerorooot.sixpan.fragment.CheckFragment"
+        android:label="fragment_check"
+        tools:layout="@layout/fragment_check" >
+        <action
+            android:id="@+id/action_checkFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+</navigation>

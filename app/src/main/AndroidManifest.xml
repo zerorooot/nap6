@@ -13,18 +13,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.6pan"
         android:usesCleartextTraffic="true">
+        <activity android:name=".activity.LoginActivity"></activity>
         <activity
             android:name=".activity.PictureActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
             android:name=".activity.VideoActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden"
-            android:launchMode="singleTask"
-            android:taskAffinity=".activity.VideoActivityTask"
-            android:supportsPictureInPicture="true"
-            android:excludeFromRecents="true"
-            android:noHistory="true"
             android:autoRemoveFromRecents="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:supportsPictureInPicture="true"
+            android:taskAffinity=".activity.VideoActivityTask"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
             android:name=".activity.FileActivity"

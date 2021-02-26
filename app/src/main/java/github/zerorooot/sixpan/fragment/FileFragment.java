@@ -10,7 +10,6 @@ import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.fragment.app.Fragment;
@@ -30,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -41,6 +39,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -80,7 +80,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     private boolean mBackKeyPressed = false;
 
     private Menu menu;
-    private static RecyclerViewOnScrollListener recyclerViewOnScrollListener = null;
+    private RecyclerViewOnScrollListener recyclerViewOnScrollListener = null;
 
     public interface RecyclerViewOnScrollListener {
         void scrollListener(RecyclerView recyclerView, int dx, int dy);
@@ -95,8 +95,8 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         return fragment;
     }
 
-    public static void setRecyclerViewOnScrollListener(RecyclerViewOnScrollListener recyclerViewOnScrollListener) {
-        FileFragment.recyclerViewOnScrollListener = recyclerViewOnScrollListener;
+    public void setRecyclerViewOnScrollListener(RecyclerViewOnScrollListener recyclerViewOnScrollListener) {
+        this.recyclerViewOnScrollListener = recyclerViewOnScrollListener;
     }
 
     @Override
@@ -423,15 +423,15 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     }
 
     private void onClick(View view, int position) {
-        List<FileBean> value = adapter.getCurrentList();
+        FileBean fileBean;
         try {
-            value.get(position);
+            List<FileBean> value = adapter.getCurrentList();
+            fileBean = value.get(position);
         } catch (Exception e) {
             Toast.makeText(requireContext(), "请刷新", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        FileBean fileBean = value.get(position);
         //searchView.onActionViewCollapsed();
 
         if (actionMode == null) {
@@ -540,7 +540,16 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
     private void select(FileBean fileBean, int position) {
         fileBean.setSelect(!fileBean.isSelect());
-        Objects.requireNonNull(liveData.getValue()).set(position, fileBean);
+        try {
+            Objects.requireNonNull(liveData.getValue()).set(position, fileBean);
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            Toast.makeText(requireContext(), sStackTrace, Toast.LENGTH_SHORT).show();
+            return;
+        }
         adapter.notifyDataSetChanged();
 
         int size = liveData.getValue().stream().filter(FileBean::isSelect).toArray().length;
@@ -665,7 +674,17 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     }
 
     private void itemMove() {
-        List<FileBean> collect = Objects.requireNonNull(liveData.getValue()).stream().filter(FileBean::isSelect).collect(Collectors.toList());
+        List<FileBean> collect;
+        try {
+            collect = Objects.requireNonNull(liveData.getValue()).stream().filter(FileBean::isSelect).collect(Collectors.toList());
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            Toast.makeText(requireContext(), sStackTrace, Toast.LENGTH_SHORT).show();
+            return;
+        }
         beSelectFileBean = (ArrayList<FileBean>) collect;
 
         binding.floatingAddActionButton.setImageResource(R.drawable.ic_baseline_clear_24);
@@ -681,7 +700,18 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
     private void itemDownload() {
         ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        List<FileBean> collect = Objects.requireNonNull(liveData.getValue()).stream().filter(FileBean::isSelect).collect(Collectors.toList());
+        List<FileBean> collect;
+        try {
+            collect = Objects.requireNonNull(liveData.getValue()).stream().filter(FileBean::isSelect).collect(Collectors.toList());
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            Toast.makeText(requireContext(), sStackTrace, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         fileViewModel.downloadZip((ArrayList<FileBean>) collect).observe(getViewLifecycleOwner(), s -> {
             ClipData clip = ClipData.newPlainText("downloadSingle", s);
             clipboard.setPrimaryClip(clip);

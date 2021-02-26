@@ -59,10 +59,10 @@ public class FileActivity extends AppCompatActivity implements FileFragment.Recy
         fileViewModel.setViewPager2(binding.fileActivityViewpager2);
         fileFragment = FileFragment.newInstance();
 
+        fileFragment.setRecyclerViewOnScrollListener(this);
         //禁止左右滚动
         binding.fileActivityViewpager2.setUserInputEnabled(false);
 
-        FileFragment.setRecyclerViewOnScrollListener(this);
 
         binding.fileActivityViewpager2.setAdapter(new FragmentStateAdapter(this) {
             @NonNull
@@ -159,11 +159,6 @@ public class FileActivity extends AppCompatActivity implements FileFragment.Recy
 
     @Override
     public void scrollListener(RecyclerView recyclerView, int dx, int dy) {
-//        Transition transition = new Slide(Gravity.BOTTOM);
-//        transition.setDuration(100);
-//        transition.addTarget(R.id.file_activity_tabLayout);
-//        TransitionManager.beginDelayedTransition(binding.getRoot(), transition);
-
         binding.fileActivityTabLayout.clearAnimation();
         if (dy > 0) {
             binding.fileActivityTabLayout.animate()
@@ -185,9 +180,6 @@ public class FileActivity extends AppCompatActivity implements FileFragment.Recy
                         }
                     });
         }
-
-
-//        binding.fileActivityTabLayout.setVisibility(dy > 0 ? View.GONE : View.VISIBLE);
     }
 
 

@@ -10,6 +10,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +28,8 @@ import okhttp3.*;
 
 
 public class LoginViewModel extends AndroidViewModel {
+    private final OkHttpClient okHttpClient = new OkHttpClient();
+    private final MediaType mediaType = MediaType.parse("application/json");
 
     public LoginViewModel(@NonNull Application application) {
         super(application);
@@ -40,8 +43,6 @@ public class LoginViewModel extends AndroidViewModel {
         jsonObject.addProperty("user", tokenBean.getAccount());
         jsonObject.addProperty("password", md5Password);
 
-        OkHttpClient okHttpClient = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json");
         Request request = new Request.Builder()
                 .url(ApiUrl.LOGIN)
                 .post(RequestBody.create(jsonObject.toString().getBytes(), mediaType))
@@ -96,12 +97,49 @@ public class LoginViewModel extends AndroidViewModel {
     }
 
 
-    public boolean check(String token) {
+    public boolean checkTime(String token) {
         String[] tokens = token.split("\\.");
         String info = Base64.decodeStr(tokens[1]);
         JsonObject jsonObject = new Gson().fromJson(info, JsonObject.class);
         int exp = jsonObject.get("exp").getAsInt();
         return (System.currentTimeMillis() / 1000) < exp;
+    }
+
+    public MutableLiveData<Boolean> checkToken(String token) {
+        MutableLiveData<Boolean> liveData = new MutableLiveData<>();
+        String url = ApiUrl.LIST;
+        JsonObject bodyJson = new JsonObject();
+        bodyJson.addProperty("parentPath", "/");
+        bodyJson.addProperty("limit", 1);
+        bodyJson.addProperty("start", 0);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create(bodyJson.toString().getBytes(), mediaType))
+                .addHeader("authorization", token)
+                .build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String body = Objects.requireNonNull(response.body()).string();
+                JsonObject object = new Gson().fromJson(body, JsonObject.class);
+                JsonArray dataList = object.getAsJsonArray("dataList");
+                //{"success":false,"status":401,"reference":"UNAUTHORIZED","message":"Unauthorized"}
+                //登录失败
+                if (Objects.isNull(dataList)) {
+                    liveData.postValue(false);
+                    return;
+                }
+                liveData.postValue(true);
+            }
+        });
+
+
+        return liveData;
     }
 
     private String toMd5(String str) {
@@ -122,4 +160,6 @@ public class LoginViewModel extends AndroidViewModel {
         }
         return hexString.toString();
     }
+
+
 }

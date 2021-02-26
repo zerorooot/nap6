@@ -88,6 +88,7 @@ public class AboutMeFragment extends Fragment {
             Intent intent = new Intent(requireActivity(), MainActivity.class);
             //禁止返回
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("exit", true);
             startActivity(intent);
         });
         //文件管理
