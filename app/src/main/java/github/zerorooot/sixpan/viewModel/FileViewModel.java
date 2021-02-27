@@ -385,9 +385,12 @@ public class FileViewModel extends AndroidViewModel {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 JsonObject jsonBody = new Gson().fromJson(Objects.requireNonNull(response.body()).string(), JsonObject.class);
                 //{"success":false,"status":404,"reference":"FILE_NOT_FOUND","message":"文件未找到"}
-                if (Objects.nonNull(jsonObject.get("success"))) {
+                //{"success":false,"status":422,"reference":"FILE_ALREADY_EXISTS","message":"File already exists"}
+
+                //{"successCount":1}
+                if (Objects.nonNull(jsonBody.get("success"))) {
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        Toast.makeText(getApplication().getApplicationContext(), jsonBody.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplication().getApplicationContext(), "移动失败，"+jsonBody.get("message").getAsString(), Toast.LENGTH_SHORT).show();
                     });
                 } else {
                     new Handler(Looper.getMainLooper()).post(() -> {
