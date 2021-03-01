@@ -43,12 +43,12 @@ public class OffLineListAndDownloadFragment extends Fragment {
             public Fragment createFragment(int position) {
                 switch (position) {
                     case 0:
-                        return OffLineDownloadFragment.newInstance();
+                        return new OffLineDownloadFragment();
                     case 1:
                         return new OffLineListFragment();
 
                 }
-                return OffLineDownloadFragment.newInstance();
+                return new OffLineDownloadFragment();
             }
         });
 
