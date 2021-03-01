@@ -30,6 +30,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.unit.DataSizeUtil;
 import github.zerorooot.sixpan.BuildConfig;
 import github.zerorooot.sixpan.MainActivity;
+import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.bean.ApiUrl;
 import github.zerorooot.sixpan.bean.TokenBean;
 import github.zerorooot.sixpan.bean.UserInfoBean;
@@ -93,11 +94,11 @@ public class AboutMeFragment extends Fragment {
         });
         //文件管理
         binding.mainFileManagerCard.setOnClickListener(v -> {
-            fileViewModel.getViewPager2().setCurrentItem(0);
+            fileViewModel.getBottomNavigationView().setSelectedItemId(R.id.fileFragment);
         });
         //离线
         binding.mainOfflineDownloadCard.setOnClickListener(e -> {
-            fileViewModel.getViewPager2().setCurrentItem(1);
+            fileViewModel.getBottomNavigationView().setSelectedItemId(R.id.offLineListAndDownloadFragment);
         });
         //版本信息
         binding.versionTextView.setText("当前版本 : " + BuildConfig.VERSION_NAME);

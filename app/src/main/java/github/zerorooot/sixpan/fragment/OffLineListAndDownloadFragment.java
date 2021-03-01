@@ -17,13 +17,13 @@ import github.zerorooot.sixpan.R;
 
 
 public class OffLineListAndDownloadFragment extends Fragment {
+    private static OffLineListAndDownloadFragment instance = new OffLineListAndDownloadFragment();
 
     private OffLineListAndDownloadFragment() {
     }
 
     public static OffLineListAndDownloadFragment newInstance() {
-        OffLineListAndDownloadFragment fragment = new OffLineListAndDownloadFragment();
-        return fragment;
+        return instance;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class OffLineListAndDownloadFragment extends Fragment {
                     case 0:
                         return OffLineDownloadFragment.newInstance();
                     case 1:
-                        return OffLineListFragment.newInstance();
+                        return new OffLineListFragment();
 
                 }
                 return OffLineDownloadFragment.newInstance();

@@ -4,8 +4,11 @@ package github.zerorooot.sixpan.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.Slide;
 import androidx.transition.Transition;
@@ -27,6 +30,7 @@ import android.view.View;
 import android.widget.Toast;
 
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -41,104 +45,79 @@ import github.zerorooot.sixpan.fragment.FileFragment;
 import github.zerorooot.sixpan.fragment.OffLineListAndDownloadFragment;
 import github.zerorooot.sixpan.viewModel.FileViewModel;
 
-public class FileActivity extends AppCompatActivity implements FileFragment.RecyclerViewOnScrollListener {
+public class FileActivity extends AppCompatActivity {
     private ActivityFileBinding binding;
-    private FileFragment fileFragment;
     private boolean mBackKeyPressed = false;
+    private Fragment currentFragment;
+    private final FragmentManager fm = getSupportFragmentManager();
+    FileFragment fileFragment;
 
-
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityFileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        BottomNavigationView bottomNavigationView = binding.bottomNavigationView;
+
+
         Intent intent = getIntent();
         String token = intent.getStringExtra("token");
         FileViewModel fileViewModel = new ViewModelProvider(this, new SavedStateViewModelFactory(getApplication(), this)).get(FileViewModel.class);
         fileViewModel.setToken(token);
-        fileViewModel.setViewPager2(binding.fileActivityViewpager2);
+        fileViewModel.setBottomNavigationView(bottomNavigationView);
         fileFragment = FileFragment.newInstance();
-
-        fileFragment.setRecyclerViewOnScrollListener(this);
-        //禁止左右滚动
-        binding.fileActivityViewpager2.setUserInputEnabled(false);
-
-
-        binding.fileActivityViewpager2.setAdapter(new FragmentStateAdapter(this) {
-            @NonNull
-            @Override
-            public Fragment createFragment(int position) {
-                switch (position) {
-                    case 0:
-                        return fileFragment;
-                    case 1:
-                        return OffLineListAndDownloadFragment.newInstance();
-                    case 2:
-                        return new AboutMeFragment();
-                }
-                return fileFragment;
-            }
-
-            @Override
-            public int getItemCount() {
-                return 3;
-            }
-        });
+        currentFragment = fileFragment;
+        OffLineListAndDownloadFragment offLineListAndDownloadFragment = OffLineListAndDownloadFragment.newInstance();
+        AboutMeFragment aboutMeFragment = new AboutMeFragment();
 
         //左上角返回
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //double click back to top
-        binding.fileActivityTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
+        fm.beginTransaction().add(R.id.fragment2, aboutMeFragment, "3").hide(aboutMeFragment).commit();
+        fm.beginTransaction().add(R.id.fragment2, offLineListAndDownloadFragment, "2").hide(offLineListAndDownloadFragment).commit();
+        fm.beginTransaction().add(R.id.fragment2, fileFragment, "1").commit();
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.fileFragment:
+                    fm.beginTransaction().hide(currentFragment).show(fileFragment).commit();
+                    currentFragment = fileFragment;
+                    return true;
+                case R.id.offLineListAndDownloadFragment:
+                    fm.beginTransaction().hide(currentFragment).show(offLineListAndDownloadFragment).commit();
+                    currentFragment = offLineListAndDownloadFragment;
+                    return true;
+                case R.id.aboutMeFragment:
+                    fm.beginTransaction().hide(currentFragment).show(aboutMeFragment).commit();
+                    currentFragment = aboutMeFragment;
+                    return true;
             }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
-                    if (!mBackKeyPressed) {
-                        mBackKeyPressed = true;
-                        new Timer().schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                mBackKeyPressed = false;
-                            }
-                        }, 3000);
-                    } else {
-                        fileFragment.binding.recycleView.smoothScrollToPosition(0);
-                    }
+            return false;
+        });
+        //双击返回顶部
+        bottomNavigationView.setOnNavigationItemReselectedListener(item -> {
+            if (item.getItemId() == R.id.fileFragment) {
+                if (!mBackKeyPressed) {
+                    mBackKeyPressed = true;
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            mBackKeyPressed = false;
+                        }
+                    }, 3000);
+                } else {
+                    fileFragment.binding.recycleView.smoothScrollToPosition(0);
                 }
             }
         });
-
-        new TabLayoutMediator(binding.fileActivityTabLayout, binding.fileActivityViewpager2, (tab, position) -> {
-            switch (position) {
-                case 0:
-                    tab.setIcon(R.drawable.ic_baseline_folder_about_me_24);
-                    tab.setText("文件");
-                    break;
-                case 1:
-                    tab.setIcon(R.drawable.ic_baseline_cloud_download_24);
-                    tab.setText("离线");
-                    break;
-                case 2:
-                    tab.setIcon(R.drawable.ic_baseline_face_24);
-                    tab.setText("我的");
-                    break;
-            }
-        }).attach();
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            if (binding.fileActivityViewpager2.getCurrentItem() != 0) {
-                binding.fileActivityViewpager2.setCurrentItem(0);
+            int selectedItemId = binding.bottomNavigationView.getSelectedItemId();
+            if (selectedItemId != R.id.fileFragment) {
+                binding.bottomNavigationView.setSelectedItemId(R.id.fileFragment);
             } else {
                 fileFragment.onBackPressed(fileFragment.backPressedCallback);
             }
@@ -150,37 +129,10 @@ public class FileActivity extends AppCompatActivity implements FileFragment.Recy
 
     @Override
     public void onBackPressed() {
-        if (binding.fileActivityViewpager2.getCurrentItem() != 0) {
-            binding.fileActivityViewpager2.setCurrentItem(0);
+        if (binding.bottomNavigationView.getSelectedItemId() != R.id.fileFragment) {
+            binding.bottomNavigationView.setSelectedItemId(R.id.fileFragment);
             return;
         }
         super.onBackPressed();
     }
-
-    @Override
-    public void scrollListener(RecyclerView recyclerView, int dx, int dy) {
-        binding.fileActivityTabLayout.clearAnimation();
-        if (dy > 0) {
-            binding.fileActivityTabLayout.animate()
-                    .alpha(0f)
-                    .setDuration(50)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            binding.fileActivityTabLayout.setVisibility(View.GONE);
-                        }
-                    });
-        } else {
-            binding.fileActivityTabLayout.animate()
-                    .alpha(1f)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            binding.fileActivityTabLayout.setVisibility(View.VISIBLE);
-                        }
-                    });
-        }
-    }
-
-
 }

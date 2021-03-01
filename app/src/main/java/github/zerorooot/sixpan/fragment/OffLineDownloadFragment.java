@@ -43,12 +43,13 @@ public class OffLineDownloadFragment extends Fragment {
     private MutableLiveData<List<OffLineParse>> offLineParseLiveData = new MutableLiveData<>();
     private OffLineDownloadAdapter adapter;
 
+    private static final OffLineDownloadFragment instance = new OffLineDownloadFragment();
+
     private OffLineDownloadFragment() {
     }
 
     public static OffLineDownloadFragment newInstance() {
-        OffLineDownloadFragment fragment = new OffLineDownloadFragment();
-        return fragment;
+        return instance;
     }
 
 

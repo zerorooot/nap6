@@ -13,8 +13,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -64,7 +64,7 @@ public class FileViewModel extends AndroidViewModel {
     private ConcurrentHashMap<String, List<FileBean>> fileListCache = new ConcurrentHashMap<>();
     private String path = "/";
     private MutableLiveData<String> pathLiveDate = new MutableLiveData<>();
-    private ViewPager2 viewPager2;
+    private BottomNavigationView bottomNavigationView;
 
     private int limitCount = 20;
 
@@ -390,7 +390,7 @@ public class FileViewModel extends AndroidViewModel {
                 //{"successCount":1}
                 if (Objects.nonNull(jsonBody.get("success"))) {
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        Toast.makeText(getApplication().getApplicationContext(), "移动失败，"+jsonBody.get("message").getAsString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplication().getApplicationContext(), "移动失败，" + jsonBody.get("message").getAsString(), Toast.LENGTH_SHORT).show();
                     });
                 } else {
                     new Handler(Looper.getMainLooper()).post(() -> {

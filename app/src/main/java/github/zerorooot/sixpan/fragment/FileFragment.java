@@ -80,24 +80,16 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     private boolean mBackKeyPressed = false;
 
     private Menu menu;
-    private RecyclerViewOnScrollListener recyclerViewOnScrollListener = null;
 
-    public interface RecyclerViewOnScrollListener {
-        void scrollListener(RecyclerView recyclerView, int dx, int dy);
-    }
+    private static final FileFragment instance = new FileFragment();
 
     private FileFragment() {
     }
 
     public static FileFragment newInstance() {
-        FileFragment fragment = new FileFragment();
-
-        return fragment;
+        return instance;
     }
 
-    public void setRecyclerViewOnScrollListener(RecyclerViewOnScrollListener recyclerViewOnScrollListener) {
-        this.recyclerViewOnScrollListener = recyclerViewOnScrollListener;
-    }
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
@@ -161,8 +153,6 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                         binding.floatingAddActionButton.show();
                     }
                 }
-                //hide tabLayout
-                recyclerViewOnScrollListener.scrollListener(recyclerView, dx, dy);
                 // LOAD MORE
                 if (!recyclerView.canScrollVertically(1) && dy > 0 && !search) {
                     binding.swipeRefreshLayout.setRefreshing(true);

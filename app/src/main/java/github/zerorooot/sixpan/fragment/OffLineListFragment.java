@@ -25,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
+import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.activity.VideoActivity;
 import github.zerorooot.sixpan.adapter.OffLineFileAdapter;
 import github.zerorooot.sixpan.bean.OffLineBean;
@@ -36,14 +37,6 @@ public class OffLineListFragment extends Fragment implements OffLineFileAdapter.
     private FileViewModel fileViewModel;
     private OffLineFileAdapter adapter;
     private MutableLiveData<List<OffLineBean>> offLineLiveData;
-
-    private OffLineListFragment() {
-    }
-
-    public static OffLineListFragment newInstance() {
-        OffLineListFragment fragment = new OffLineListFragment();
-        return fragment;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -114,11 +107,12 @@ public class OffLineListFragment extends Fragment implements OffLineFileAdapter.
     @Override
     public void onItemClick(View view, int position) {
         OffLineBean offLineBean = offLineLiveData.getValue().get(position);
+        //跳转到fileFragment
         if (offLineBean.isDirectory()) {
             fileViewModel.setPath(offLineBean.getAccessPath());
             fileViewModel.getLiveData().setValue(null);
             fileViewModel.getFile(offLineBean.getAccessPath(), 0, fileViewModel.getLimitCount());
-            fileViewModel.getViewPager2().setCurrentItem(0);
+            fileViewModel.getBottomNavigationView().setSelectedItemId(R.id.fileFragment);
             return;
         }
         if (offLineBean.getFileMime().contains("video")) {
