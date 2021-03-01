@@ -40,6 +40,8 @@ public class CheckFragment extends Fragment {
         NavController navController = Navigation.findNavController(view);
         SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(requireContext());
         LoginViewModel loginViewModel = new ViewModelProvider(this, new SavedStateViewModelFactory(requireActivity().getApplication(), this)).get(LoginViewModel.class);
+        //版本检测
+        loginViewModel.checkUpdate();
         TokenBean tokenBean = sharedPreferencesUtil.get();
         if (requireActivity().getIntent().getBooleanExtra("exit", false)) {
             navController.navigate(R.id.action_checkFragment_to_loginFragment);

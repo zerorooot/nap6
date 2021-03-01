@@ -18,4 +18,5 @@ public class ApiUrl {
     public static final String DELETE_COMPLETE = "https://api.2dland.cn/v3/offline/clear";
     public static final String OFFLINE_DELETE = "https://api.2dland.cn/v3/offline/delete";
     public static final String USER_INFO = "https://api.2dland.cn/v3/user/info";
+    public static final String GITHUB_CHECK_UPDATE = "https://api.github.com/repos/zerorooot/nap6/releases?per_page=1";
 }

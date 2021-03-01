@@ -21,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 import cn.hutool.core.codec.Base64;
+import github.zerorooot.sixpan.BuildConfig;
 import github.zerorooot.sixpan.bean.ApiUrl;
 import github.zerorooot.sixpan.bean.TokenBean;
 
@@ -140,6 +141,31 @@ public class LoginViewModel extends AndroidViewModel {
 
 
         return liveData;
+    }
+
+    public void checkUpdate() {
+        String url = ApiUrl.GITHUB_CHECK_UPDATE;
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "application/vnd.github.v3+json")
+                .build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String body = response.body().string();
+                JsonObject jsonObject = new Gson().fromJson(body, JsonArray.class).get(0).getAsJsonObject();
+                String tag_name = jsonObject.get("tag_name").getAsString();
+                if (!BuildConfig.VERSION_NAME.equalsIgnoreCase(tag_name)) {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        Toast.makeText(getApplication(), "检测到新版本:" + tag_name, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
     }
 
     private String toMd5(String str) {
