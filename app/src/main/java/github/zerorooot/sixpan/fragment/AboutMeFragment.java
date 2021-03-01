@@ -85,7 +85,8 @@ public class AboutMeFragment extends Fragment {
             TokenBean tokenBean = sharedPreferencesUtil.get();
             tokenBean.setToken(null);
             sharedPreferencesUtil.save(tokenBean);
-
+            //登出
+            fileViewModel.logout();
             Intent intent = new Intent(requireActivity(), MainActivity.class);
             //禁止返回
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

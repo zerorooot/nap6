@@ -44,6 +44,7 @@ import github.zerorooot.sixpan.bean.OffLineQuotaBean;
 import github.zerorooot.sixpan.bean.PositionBean;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -471,6 +472,16 @@ public class FileViewModel extends AndroidViewModel {
         });
         return liveData;
     }
+
+    public void logout() {
+        new Thread(() -> {
+            try {
+                network(new JsonObject(), ApiUrl.LOGOUT).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 //---------------------------------------------------------离线相关----------------------------------------------------
 
     /**
@@ -669,7 +680,7 @@ public class FileViewModel extends AndroidViewModel {
                 .url(url)
                 .post(RequestBody.create(jsonObject.toString().getBytes(), mediaType))
                 .addHeader("authorization", token)
-                .addHeader("accept-language","zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
+                .addHeader("accept-language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
                 .build();
 
         return okHttpClient.newCall(request);
