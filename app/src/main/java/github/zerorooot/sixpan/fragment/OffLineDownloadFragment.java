@@ -40,7 +40,7 @@ import github.zerorooot.sixpan.viewModel.FileViewModel;
 public class OffLineDownloadFragment extends Fragment {
     private FragmentOfflineDownloadBinding binding;
     private FileViewModel fileViewModel;
-    private MutableLiveData<List<OffLineParse>> offLineParseLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<OffLineParse>> offLineParseLiveData = new MutableLiveData<>();
     private OffLineDownloadAdapter adapter;
 
     private static final OffLineDownloadFragment instance = new OffLineDownloadFragment();
@@ -172,13 +172,6 @@ public class OffLineDownloadFragment extends Fragment {
                 adapter.notifyItemChanged(finalI);
             });
         }
-
-//        for (String s : linkList) {
-//            fileViewModel.offLineParse(s, password).observe(getViewLifecycleOwner(), p -> {
-//                offLineParseList.add(p);
-//            });
-//        }
-//        offLineParseLiveData.postValue(offLineParseList);
 
     }
 

@@ -43,17 +43,23 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
     @Override
     public void onBindViewHolder(@NonNull OffLineDownloadViewHolder holder, int position) {
         OffLineParse item = getItem(holder.getAdapterPosition());
-        holder.linkTextView.setText(item.getTextLink());
-        holder.cardView.setCardBackgroundColor(item.isReady() ? Color.CYAN : Color.WHITE);
+        holder.offLineParseNameTextView.setText(item.getName());
+        holder.offLineParseTextLink.setText(item.getTextLink());
+        holder.offLineParseSizeTextView.setText(item.getSizeString());
+        holder.cardView.setCardBackgroundColor(item.isReady() ? Color.CYAN : Color.RED);
     }
 
     public static class OffLineDownloadViewHolder extends RecyclerView.ViewHolder {
-        private final TextView linkTextView;
+        private final TextView offLineParseNameTextView;
+        private final TextView offLineParseTextLink;
+        private final TextView offLineParseSizeTextView;
         private final CardView cardView;
 
         public OffLineDownloadViewHolder(@NonNull View itemView) {
             super(itemView);
-            linkTextView = itemView.findViewById(R.id.textViewDownload);
+            offLineParseNameTextView = itemView.findViewById(R.id.offLineParseNameTextView);
+            offLineParseTextLink = itemView.findViewById(R.id.offLineParseTextLink);
+            offLineParseSizeTextView = itemView.findViewById(R.id.offLineParseSizeTextView);
             cardView = itemView.findViewById(R.id.offline_download_cardview);
         }
     }

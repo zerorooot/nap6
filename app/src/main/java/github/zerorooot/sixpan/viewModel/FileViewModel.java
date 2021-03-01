@@ -610,13 +610,20 @@ public class FileViewModel extends AndroidViewModel {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String body = Objects.requireNonNull(response.body()).string();
                 JsonObject result = new Gson().fromJson(body, JsonObject.class);
-                OffLineParse parse = new OffLineParse();
-                parse.setTextLink(jsonObject.get("textLink").getAsString());
+                OffLineParse parse;
                 //{"success":false,"status":422,"reference":"UNSUPPORT_URL","message":"不支持的链接"}
                 if (result.has("hash")) {
                     String hash = result.get("hash").getAsString();
+                    JsonObject info = result.getAsJsonObject("info");
+                    parse = new Gson().fromJson(info, OffLineParse.class);
+                    parse.setSizeString(DataSizeUtil.format(parse.getSize()));
                     parse.setHash(hash);
                     parse.setReady(true);
+                } else {
+                    parse = new OffLineParse();
+                    parse.setTextLink(link);
+                    parse.setName(result.get("message").getAsString());
+                    parse.setReady(false);
                 }
                 liveData.postValue(parse);
             }
@@ -662,6 +669,7 @@ public class FileViewModel extends AndroidViewModel {
                 .url(url)
                 .post(RequestBody.create(jsonObject.toString().getBytes(), mediaType))
                 .addHeader("authorization", token)
+                .addHeader("accept-language","zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
                 .build();
 
         return okHttpClient.newCall(request);

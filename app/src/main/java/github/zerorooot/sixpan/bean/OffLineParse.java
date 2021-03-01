@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 public class OffLineParse {
     private String hash;
     private String textLink;
-    private boolean ready = false;
-
-
+    private boolean ready;
+    private String name;
+    private long size;
+    private String sizeString;
+    private String message;
 }
