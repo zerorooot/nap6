@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateViewModelFactory;
@@ -31,6 +32,8 @@ import android.widget.FrameLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.android.material.behavior.HideBottomViewOnScrollBehavior;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -439,7 +442,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     private void gotoNext(FileBean fileBean) {
         binding.swipeRefreshLayout.setRefreshing(true);
         clearMenuItemIcon();
-
+        showBottomNavigationView();
         if (search) {
             removeSearch();
         }
@@ -464,6 +467,13 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         //更新
         liveData.setValue(null);
         fileViewModel.getFile(fileBean.getPath(), 0, fileViewModel.getLimitCount());
+    }
+
+    private void showBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = fileViewModel.getBottomNavigationView();
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) bottomNavigationView.getLayoutParams();
+        HideBottomViewOnScrollBehavior<BottomNavigationView> behavior = (HideBottomViewOnScrollBehavior<BottomNavigationView>) layoutParams.getBehavior();
+        behavior.slideUp(bottomNavigationView);
     }
 
     /**
@@ -739,7 +749,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
     public void onBackPressed(OnBackPressedCallback callback) {
         clearMenuItemIcon();
-
+        showBottomNavigationView();
         if (!searchView.isIconified()) {
             searchView.onActionViewCollapsed();
             return;

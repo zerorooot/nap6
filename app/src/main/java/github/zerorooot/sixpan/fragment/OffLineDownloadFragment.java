@@ -64,7 +64,10 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
 
         fileViewModel.getPathLiveDate().observe(getViewLifecycleOwner(), path -> {
             offLinePath = path;
-            adapter.getOfflinePath().setText(path);
+            new Thread(() -> {
+                while (adapter.getOfflinePath() == null) {}
+                adapter.getOfflinePath().setText(path);
+            }).start();
         });
 
     }
