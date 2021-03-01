@@ -2,7 +2,7 @@ package github.zerorooot.sixpan.adapter;
 
 import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack;
 
-public class VideoAllCallBackAdapt implements VideoAllCallBack {
+public class VideoAllCallBackAdapter implements VideoAllCallBack {
 
     @Override
     public void onStartPrepared(String url, Object... objects) {

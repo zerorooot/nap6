@@ -1,48 +1,32 @@
 package github.zerorooot.sixpan.activity;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
-import com.shuyu.gsyvideoplayer.cache.CacheFactory;
 import com.shuyu.gsyvideoplayer.model.VideoOptionModel;
 import com.shuyu.gsyvideoplayer.player.IjkPlayerManager;
 
-import com.shuyu.gsyvideoplayer.player.PlayerFactory;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
 
 
 import org.cybergarage.upnp.Device;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import github.zerorooot.sixpan.R;
-import github.zerorooot.sixpan.adapter.VideoAllCallBackAdapt;
+import github.zerorooot.sixpan.adapter.VideoAllCallBackAdapter;
 import github.zerorooot.sixpan.customizeActivity.MyGSYVideoPlayer;
 
 import github.zerorooot.sixpan.dlan.DLNADeviceManager;
@@ -101,7 +85,7 @@ public class VideoActivity extends AppCompatActivity {
         videoPlayer.startPlayLogic();
 
 
-        videoPlayer.setVideoAllCallBack(new VideoAllCallBackAdapt() {
+        videoPlayer.setVideoAllCallBack(new VideoAllCallBackAdapter() {
             @Override
             public void onPrepared(String url, Object... objects) {
                 int videoHeight = videoPlayer.getCurrentVideoHeight();

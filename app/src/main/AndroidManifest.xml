@@ -13,7 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.6pan"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.LoginActivity"></activity>
         <activity
             android:name=".activity.PictureActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
