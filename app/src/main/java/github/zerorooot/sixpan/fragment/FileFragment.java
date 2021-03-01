@@ -180,7 +180,6 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-//                OffLineBean offLineBean = offLineList.getValue().get(viewHolder.getAdapterPosition());
                 FileBean fileBean = liveData.getValue().get(viewHolder.getAdapterPosition());
                 List<FileBean> fileBeanList = new ArrayList<>();
                 fileBeanList.add(fileBean);
@@ -195,8 +194,8 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                         adapter.notifyItemChanged(viewHolder.getAdapterPosition());
                     }
                 });
+                make.setAnchorView(fileViewModel.getBottomNavigationView());
                 make.show();
-
             }
         }).attachToRecyclerView(binding.recycleView);
     }
