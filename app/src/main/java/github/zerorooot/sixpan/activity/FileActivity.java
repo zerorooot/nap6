@@ -1,42 +1,19 @@
 package github.zerorooot.sixpan.activity;
 
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.transition.Slide;
-import androidx.transition.Transition;
-import androidx.transition.TransitionManager;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.GestureDetector;
-import android.view.Gravity;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-
-import com.google.android.material.behavior.HideBottomViewOnScrollBehavior;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
-
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -92,6 +69,8 @@ public class FileActivity extends AppCompatActivity {
                     return true;
                 case R.id.aboutMeFragment:
                     fm.beginTransaction().hide(currentFragment).show(aboutMeFragment).commit();
+                    //刷新离线配额
+                    aboutMeFragment.setOfflineQuota();
                     currentFragment = aboutMeFragment;
                     return true;
             }
@@ -134,8 +113,8 @@ public class FileActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (binding.bottomNavigationView.getSelectedItemId() != R.id.fileFragment) {
             binding.bottomNavigationView.setSelectedItemId(R.id.fileFragment);
-            return;
+        } else {
+            fileFragment.onBackPressed(fileFragment.backPressedCallback);
         }
-        super.onBackPressed();
     }
 }

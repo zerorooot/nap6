@@ -157,12 +157,15 @@ public class LoginViewModel extends AndroidViewModel {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String body = response.body().string();
-                JsonObject jsonObject = new Gson().fromJson(body, JsonArray.class).get(0).getAsJsonObject();
-                String tag_name = jsonObject.get("tag_name").getAsString();
-                if (!BuildConfig.VERSION_NAME.equalsIgnoreCase(tag_name)) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        Toast.makeText(getApplication(), "检测到新版本:" + tag_name, Toast.LENGTH_SHORT).show();
-                    });
+                try {
+                    JsonObject jsonObject = new Gson().fromJson(body, JsonArray.class).get(0).getAsJsonObject();
+                    String tag_name = jsonObject.get("tag_name").getAsString();
+                    if (!BuildConfig.VERSION_NAME.equalsIgnoreCase(tag_name)) {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            Toast.makeText(getApplication(), "检测到新版本:" + tag_name, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                } catch (Exception ignored) {
                 }
             }
         });

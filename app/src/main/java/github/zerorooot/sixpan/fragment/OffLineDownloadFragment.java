@@ -4,6 +4,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,11 +16,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
@@ -65,7 +64,8 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
         fileViewModel.getPathLiveDate().observe(getViewLifecycleOwner(), path -> {
             offLinePath = path;
             new Thread(() -> {
-                while (adapter.getOfflinePath() == null) {}
+                while (adapter.getOfflinePath() == null) {
+                }
                 adapter.getOfflinePath().setText(path);
             }).start();
         });
@@ -99,6 +99,7 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
                 adapter.notifyItemChanged(finalI + 1);
             });
         }
+        binding.recyclerView.scrollToPosition(0);
     }
 
     @Override

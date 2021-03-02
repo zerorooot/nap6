@@ -469,6 +469,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         fileViewModel.getFile(fileBean.getPath(), 0, fileViewModel.getLimitCount());
     }
 
+    @SuppressWarnings("all")
     private void showBottomNavigationView() {
         BottomNavigationView bottomNavigationView = fileViewModel.getBottomNavigationView();
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) bottomNavigationView.getLayoutParams();
@@ -788,7 +789,11 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                 }, 3000);
             } else {
                 callback.setEnabled(false);
-                requireActivity().onBackPressed();
+                //回到桌面
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                startActivity(intent);
             }
             return;
         }
