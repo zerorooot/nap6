@@ -12,6 +12,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -28,6 +29,8 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
     private OffLineDownloadAdapter.ClickInterface clickInterface;
     private String links;
     private String password;
+    private SwipeRefreshLayout offLineSwipe;
+
 
     public void setClickInterface(ClickInterface clickInterface) {
         this.clickInterface = clickInterface;
@@ -40,6 +43,9 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
         void downloadClick(TextInputEditText links, TextInputEditText password);
     }
 
+    public void setOffLineSwipe(SwipeRefreshLayout offLineSwipe) {
+        this.offLineSwipe = offLineSwipe;
+    }
 
     public OffLineDownloadAdapter() {
         super(new DiffUtil.ItemCallback<OffLineParse>() {
@@ -81,6 +87,12 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
             });
             viewHolder.offline_new_by_links_button_download.setOnClickListener(e -> {
                 clickInterface.downloadClick(viewHolder.offline_by_links_editText_links, viewHolder.offline_by_links_editText_password);
+            });
+            offLineSwipe.setOnRefreshListener(() -> {
+                viewHolder.offline_by_links_editText_links.setText("");
+                viewHolder.offline_by_links_editText_password.setText("");
+                this.submitList(null);
+                offLineSwipe.setRefreshing(false);
             });
 
             return viewHolder;

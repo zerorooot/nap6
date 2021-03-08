@@ -66,6 +66,7 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
             binding.offlinePath.setText(path);
         });
 
+        adapter.setOffLineSwipe(binding.offLineSwipe);
     }
 
 
