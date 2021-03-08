@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,9 +19,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.Objects;
 
 import github.zerorooot.sixpan.R;
-import github.zerorooot.sixpan.bean.OffLineParse;;
-import lombok.Getter;
-import lombok.Setter;
+import github.zerorooot.sixpan.bean.OffLineParse;
 
 
 public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDownloadAdapter.OffLineDownloadViewHolder> {
@@ -31,15 +28,11 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
     private OffLineDownloadAdapter.ClickInterface clickInterface;
     private String links;
     private String password;
-    private TextView offlinePath;
 
     public void setClickInterface(ClickInterface clickInterface) {
         this.clickInterface = clickInterface;
     }
 
-    public TextView getOfflinePath() {
-        return offlinePath;
-    }
 
     public interface ClickInterface {
         void parseClick(String links, String password);
@@ -68,10 +61,7 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         OffLineDownloadViewHolder viewHolder;
         View inflate;
-        if (viewType == BODY_VIEW) {
-            inflate = layoutInflater.inflate(R.layout.offline_download_cell, parent, false);
-            viewHolder = new OffLineDownloadViewHolder(inflate);
-        } else {
+        if (viewType == HEAD_VIEW) {
             inflate = layoutInflater.inflate(R.layout.offline_download_head, parent, false);
             viewHolder = new OffLineDownloadViewHolder(inflate);
             viewHolder.offline_by_links_editText_links.addTextChangedListener(new TextWatcherAdapter() {
@@ -92,10 +82,12 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
             viewHolder.offline_new_by_links_button_download.setOnClickListener(e -> {
                 clickInterface.downloadClick(viewHolder.offline_by_links_editText_links, viewHolder.offline_by_links_editText_password);
             });
-            this.offlinePath = viewHolder.offlinePath;
+
+            return viewHolder;
         }
 
-
+        inflate = layoutInflater.inflate(R.layout.offline_download_cell, parent, false);
+        viewHolder = new OffLineDownloadViewHolder(inflate);
         return viewHolder;
     }
 
@@ -147,7 +139,6 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
         private final TextInputEditText offline_by_links_editText_password;
         private final MaterialButton offline_new_by_links_button_parse;
         private final MaterialButton offline_new_by_links_button_download;
-        private final TextView offlinePath;
 
         public OffLineDownloadViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -157,7 +148,6 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
             cardView = itemView.findViewById(R.id.offline_download_cardview);
 
             //-----------------------------------
-            offlinePath = itemView.findViewById(R.id.offlinePath);
             offline_by_links_editText_links = itemView.findViewById(R.id.offline_by_links_editText_links);
             offline_by_links_editText_password = itemView.findViewById(R.id.offline_by_links_editText_password);
             offline_new_by_links_button_parse = itemView.findViewById(R.id.offline_new_by_links_button_parse);

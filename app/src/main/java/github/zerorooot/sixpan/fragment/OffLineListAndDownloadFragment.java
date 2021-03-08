@@ -1,15 +1,14 @@
 package github.zerorooot.sixpan.fragment;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -17,14 +16,13 @@ import github.zerorooot.sixpan.R;
 
 
 public class OffLineListAndDownloadFragment extends Fragment {
-    private static OffLineListAndDownloadFragment instance = new OffLineListAndDownloadFragment();
-
-    private OffLineListAndDownloadFragment() {
-    }
-
-    public static OffLineListAndDownloadFragment newInstance() {
-        return instance;
-    }
+//    private static OffLineListAndDownloadFragment instance = new OffLineListAndDownloadFragment();
+//
+//
+//
+//    public static OffLineListAndDownloadFragment newInstance() {
+//        return instance;
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

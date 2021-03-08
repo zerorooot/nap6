@@ -19,7 +19,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -44,7 +43,6 @@ import github.zerorooot.sixpan.bean.OffLineQuotaBean;
 import github.zerorooot.sixpan.bean.PositionBean;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;

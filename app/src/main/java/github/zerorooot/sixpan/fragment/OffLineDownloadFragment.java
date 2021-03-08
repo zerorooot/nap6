@@ -36,7 +36,7 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
     private FileViewModel fileViewModel;
     private final MutableLiveData<List<OffLineParse>> offLineParseLiveData = new MutableLiveData<>();
     private OffLineDownloadAdapter adapter;
-    private String offLinePath;
+    private String offLinePath = "/";
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
@@ -63,11 +63,7 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
 
         fileViewModel.getPathLiveDate().observe(getViewLifecycleOwner(), path -> {
             offLinePath = path;
-            new Thread(() -> {
-                while (adapter.getOfflinePath() == null) {
-                }
-                adapter.getOfflinePath().setText(path);
-            }).start();
+            binding.offlinePath.setText(path);
         });
 
     }

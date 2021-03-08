@@ -30,7 +30,9 @@ public class FileActivity extends AppCompatActivity {
     private boolean mBackKeyPressed = false;
     private Fragment currentFragment;
     private final FragmentManager fm = getSupportFragmentManager();
-    FileFragment fileFragment;
+    private FileFragment fileFragment;
+    private OffLineListAndDownloadFragment offLineListAndDownloadFragment;
+    private AboutMeFragment aboutMeFragment;
 
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -46,17 +48,28 @@ public class FileActivity extends AppCompatActivity {
         FileViewModel fileViewModel = new ViewModelProvider(this, new SavedStateViewModelFactory(getApplication(), this)).get(FileViewModel.class);
         fileViewModel.setToken(token);
         fileViewModel.setBottomNavigationView(bottomNavigationView);
-        fileFragment = FileFragment.newInstance();
-        currentFragment = fileFragment;
-        OffLineListAndDownloadFragment offLineListAndDownloadFragment = OffLineListAndDownloadFragment.newInstance();
-        AboutMeFragment aboutMeFragment = new AboutMeFragment();
+
+        //防止重叠
+        if (savedInstanceState == null) {
+            fileFragment = new FileFragment();
+            currentFragment = fileFragment;
+            offLineListAndDownloadFragment = new OffLineListAndDownloadFragment();
+            aboutMeFragment = new AboutMeFragment();
+            fm.beginTransaction().add(R.id.fragment2, aboutMeFragment, "3").hide(aboutMeFragment).commit();
+            fm.beginTransaction().add(R.id.fragment2, offLineListAndDownloadFragment, "2").hide(offLineListAndDownloadFragment).commit();
+            fm.beginTransaction().add(R.id.fragment2, fileFragment, "1").commit();
+        } else {
+            fileFragment = (FileFragment) getSupportFragmentManager().getFragment(savedInstanceState, "1");
+            offLineListAndDownloadFragment = (OffLineListAndDownloadFragment) getSupportFragmentManager().getFragment(savedInstanceState, "2");
+            aboutMeFragment = (AboutMeFragment) getSupportFragmentManager().getFragment(savedInstanceState, "3");
+            currentFragment = getSupportFragmentManager().getFragment(savedInstanceState, "4");
+        }
+
 
         //左上角返回
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        fm.beginTransaction().add(R.id.fragment2, aboutMeFragment, "3").hide(aboutMeFragment).commit();
-        fm.beginTransaction().add(R.id.fragment2, offLineListAndDownloadFragment, "2").hide(offLineListAndDownloadFragment).commit();
-        fm.beginTransaction().add(R.id.fragment2, fileFragment, "1").commit();
+
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.fileFragment:
@@ -116,5 +129,14 @@ public class FileActivity extends AppCompatActivity {
         } else {
             fileFragment.onBackPressed(fileFragment.backPressedCallback);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        fm.putFragment(outState, "1", fileFragment);
+        fm.putFragment(outState, "2", offLineListAndDownloadFragment);
+        fm.putFragment(outState, "3", aboutMeFragment);
+        fm.putFragment(outState, "4", currentFragment);
     }
 }
