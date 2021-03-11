@@ -197,7 +197,7 @@ public class FileViewModel extends AndroidViewModel {
      * @param fileBean 要重命名的bean
      * @param newName  新文件名
      */
-    public void rename(FileBean fileBean, String newName) {
+    public void rename(FileBean fileBean, String newName, String path) {
         String url = ApiUrl.RENAME;
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("identity", fileBean.getIdentity());
@@ -218,7 +218,7 @@ public class FileViewModel extends AndroidViewModel {
                     size = liveData.getValue().size();
                 }
                 liveData.postValue(null);
-                getFile(fileBean.getParentPath(), 0, size);
+                getFile(path, 0, size);
             }
         });
     }

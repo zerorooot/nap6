@@ -84,7 +84,6 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     private Menu menu;
 
 
-
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -561,8 +560,11 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
             return true;
         }
 
-        actionMode = requireActivity().startActionMode(getCallBack());
-        fileBean.setSelect(true);
+        if (actionMode == null) {
+            actionMode = requireActivity().startActionMode(getCallBack());
+        }
+
+        fileBean.setSelect(!fileBean.isSelect());
         liveData.getValue().set(position, fileBean);
         adapter.notifyDataSetChanged();
 
@@ -866,6 +868,32 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         ArrayList<FileBean> fileBeanList = new ArrayList<>();
         fileBeanList.add(fileBean);
         viewPhoto(fileBeanList, 1);
+    }
+
+    @Override
+    public void rename(Context c, FileBean fileBean) {
+        TextInputEditText textInputEditText = new TextInputEditText(c);
+        textInputEditText.setText(fileBean.getName());
+        MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(requireContext());
+        materialAlertDialogBuilder.setTitle("重命名文件")
+                .setView(textInputEditText)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", (dialog, which) -> {
+                    String path = fileBean.getParentPath();
+                    if (search) {
+                        //清除缓存
+                        fileViewModel.getFileListCache().remove(path);
+
+                        path = fileViewModel.getPath();
+                        List<FileBean> fileBeans = fileViewModel.getFileListCache().get(path);
+                        removeSearch();
+                        //退出搜索，恢复之前的样子
+                        liveData.postValue(fileBeans);
+                    }
+
+                    String newName = textInputEditText.getText().toString();
+                    fileViewModel.rename(fileBean, newName, path);
+                }).show();
     }
 
 

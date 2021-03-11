@@ -153,6 +153,8 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
                 adapter.notifyDataSetChanged();
                 links.setText("");
                 password.setText("");
+                //刷新列表
+                fileViewModel.getOffLineList();
             } else {
                 Toast.makeText(requireContext(), "离线下载失败~", Toast.LENGTH_SHORT).show();
             }

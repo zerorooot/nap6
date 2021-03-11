@@ -3,23 +3,16 @@ package github.zerorooot.sixpan.customizeActivity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import github.zerorooot.sixpan.R;
-import github.zerorooot.sixpan.adapter.FileAdapter;
 import github.zerorooot.sixpan.bean.FileBean;
 import github.zerorooot.sixpan.viewModel.FileViewModel;
 import lombok.Setter;
@@ -49,6 +42,7 @@ public class BottomDialog extends BaseBottomDialog {
 
         void forceViewImage(FileBean fileBean);
 
+        void rename(Context c, FileBean fileBean);
     }
 
     @Override
@@ -79,7 +73,8 @@ public class BottomDialog extends BaseBottomDialog {
         });
 
         v.findViewById(R.id.mRlRename).setOnClickListener(e -> {
-            showRenameDialog(requireContext());
+            //showRenameDialog(requireContext());
+            bottomDialogInterface.rename(requireContext(), currentFileBean);
             this.dismiss();
         });
 
@@ -150,16 +145,5 @@ public class BottomDialog extends BaseBottomDialog {
 //                .setNegativeButton("取消", null)
 //                .create();
 //        dialog.show();
-
-        TextInputEditText textInputEditText = new TextInputEditText(c);
-        textInputEditText.setText(currentFileBean.getName());
-        MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(requireContext());
-        materialAlertDialogBuilder.setTitle("重命名文件")
-                .setView(textInputEditText)
-                .setNegativeButton("取消", null)
-                .setPositiveButton("确定", (dialog, which) -> {
-                    String newName = textInputEditText.getText().toString();
-                    fileViewModel.rename(currentFileBean, newName);
-                }).show();
     }
 }
