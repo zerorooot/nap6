@@ -513,15 +513,16 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                 break;
             }
         }
-        viewPhoto((ArrayList<FileBean>) photoList, position);
+        viewPhoto((ArrayList<FileBean>) photoList, position, liveData.getValue().size());
 
     }
 
-    private void viewPhoto(ArrayList<FileBean> photoList, int position) {
+    private void viewPhoto(ArrayList<FileBean> photoList, int position, int start) {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("list", photoList);
         bundle.putString("token", fileViewModel.getToken());
         bundle.putInt("position", position);
+        bundle.putInt("start", start);
         Intent intent = new Intent(requireActivity(), PictureActivity.class);
         intent.putExtra("bundle", bundle);
         startActivity(intent);
@@ -867,7 +868,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     public void forceViewImage(FileBean fileBean) {
         ArrayList<FileBean> fileBeanList = new ArrayList<>();
         fileBeanList.add(fileBean);
-        viewPhoto(fileBeanList, 1);
+        viewPhoto(fileBeanList, 1, 2);
     }
 
     @Override

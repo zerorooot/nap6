@@ -121,7 +121,9 @@ public class LoginViewModel extends AndroidViewModel {
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    Toast.makeText(getApplication(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
 
             @Override

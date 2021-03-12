@@ -146,6 +146,59 @@ public class FileViewModel extends AndroidViewModel {
     }
 
     /**
+     * 获取图片·
+     *
+     * @param parentPath 文件路径
+     */
+    public MutableLiveData<List<FileBean>> getPictureFile(String parentPath, int start, int limit) {
+        MutableLiveData<List<FileBean>> liveData = new MutableLiveData<>();
+        String url = ApiUrl.LIST;
+        JsonObject bodyJson = new JsonObject();
+        bodyJson.addProperty("parentPath", parentPath);
+        bodyJson.addProperty("limit", limit);
+        bodyJson.addProperty("start", start);
+        network(bodyJson, url).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                errorLog("error-getFile", e);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    Toast.makeText(getApplication(), "网路连接失败，请重试!!!", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String body = Objects.requireNonNull(response.body()).string();
+                JsonObject object = new Gson().fromJson(body, JsonObject.class);
+                JsonArray dataList = object.getAsJsonArray("dataList");
+                //{"success":false,"status":401,"reference":"UNAUTHORIZED","message":"Unauthorized"}
+                //登录失败
+                if (Objects.isNull(dataList)) {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        Toast.makeText(getApplication(), "token过期，请重新登录", Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
+
+                if (dataList.size() == 0) {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        Toast.makeText(getApplication(), "加载完毕~", Toast.LENGTH_SHORT).show();
+                    });
+                }
+                ArrayList<FileBean> fileBeanLinkedList = new ArrayList<>();
+                for (int i = 0; i < dataList.size(); i++) {
+                    FileBean fileBean = setTimeAndPathAndSize(dataList, i);
+                    if (fileBean.getMime().contains("image")) {
+                        fileBeanLinkedList.add(fileBean);
+                    }
+                }
+                liveData.postValue(fileBeanLinkedList);
+            }
+        });
+        return liveData;
+    }
+
+    /**
      * 更新缓存
      *
      * @param parentPath 文件路径
