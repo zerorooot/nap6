@@ -54,7 +54,7 @@ public class PictureActivity extends AppCompatActivity {
                         photoList.addAll(fileBeans);
                         adapter.submitList(photoList);
                         binding.textViewItem.setText((position + 1) + "/" + photoList.size());
-                        start = start + photoList.size();
+                        start = start + fileViewModel.getLimitCount();
                     });
                 }
             }

@@ -783,6 +783,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                 }, 3000);
             } else {
                 callback.setEnabled(false);
+                mBackKeyPressed = false;
                 //回到桌面
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

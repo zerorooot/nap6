@@ -1,23 +1,19 @@
 package github.zerorooot.sixpan.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.MutableLiveData;
-
 import android.content.Intent;
-
 import android.content.res.Configuration;
 import android.os.Bundle;
-
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
 import com.shuyu.gsyvideoplayer.model.VideoOptionModel;
 import com.shuyu.gsyvideoplayer.player.IjkPlayerManager;
-
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
-
 
 import org.cybergarage.upnp.Device;
 
@@ -28,7 +24,6 @@ import java.util.Objects;
 import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.adapter.VideoAllCallBackAdapter;
 import github.zerorooot.sixpan.customizeActivity.MyGSYVideoPlayer;
-
 import github.zerorooot.sixpan.dlan.DLNADeviceManager;
 import github.zerorooot.sixpan.dlan.IController;
 import github.zerorooot.sixpan.dlan.MultiPointController;
@@ -94,6 +89,13 @@ public class VideoActivity extends AppCompatActivity {
                 if (videoWidth < videoHeight) {
                     orientationUtils.resolveByClick();
                 }
+            }
+
+            @Override
+            public void onPlayError(String url, Object... objects) {
+                super.onPlayError(url, objects);
+                Toast.makeText(getBaseContext(), "播放失败~", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
 
