@@ -5,35 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import androidx.constraintlayout.widget.Guideline;
+
 import com.shuyu.gsyvideoplayer.utils.CommonUtil;
-import com.shuyu.gsyvideoplayer.utils.Debuger;
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
-import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer;
-import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer;
 
 import java.util.Date;
 import java.util.Timer;
@@ -41,7 +28,6 @@ import java.util.TimerTask;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.unit.DataSizeUtil;
-import cn.hutool.core.io.unit.DataUnit;
 import github.zerorooot.sixpan.R;
 
 public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
@@ -56,13 +42,15 @@ public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
     private TextView netSpeedTextViewLandscape;
     private TextView batteryTextView;
     private TextView timeTextView;
-
+    private Guideline guidelinePortrait;
+    private Guideline guidelineLandscape;
     private OrientationUtils orientationUtils;
 
     private Timer timer;
 
 
     private TextView dlanTextView;
+
     public MyGSYVideoPlayer(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -87,6 +75,9 @@ public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
         netSpeedTextViewLandscape = findViewById(R.id.netSpeedTextViewLandscape);
         batteryTextView = findViewById(R.id.batteryTextView);
         timeTextView = findViewById(R.id.timeTextView);
+
+        guidelinePortrait = findViewById(R.id.guideline12);
+        guidelineLandscape = findViewById(R.id.guideline13);
 
         mMoreScale = findViewById(R.id.moreScale);
         switchSpeed = findViewById(R.id.switchSpeed);
@@ -182,22 +173,41 @@ public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
     }
 
     private void showNetSpeed() {
+        int x = (int) netSpeedTextViewLandscape.getX() + netSpeedTextViewLandscape.getWidth() / 2;
+        int y = (int) guidelineLandscape.getY();
         if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            netSpeedTextViewPortrait.setVisibility(VISIBLE);
+            y = (int) netSpeedTextViewPortrait.getX() + netSpeedTextViewPortrait.getWidth() / 2;
+            x = (int) guidelinePortrait.getY();
+            setColorAndShow(netSpeedTextViewPortrait, x, y);
         } else {
-            netSpeedTextViewLandscape.setVisibility(VISIBLE);
+            setColorAndShow(netSpeedTextViewLandscape, x, y);
         }
+    }
+
+    private void setColorAndShow(TextView textView, int x, int y) {
+        textView.setVisibility(VISIBLE);
+
+        this.taskShotPic(bitmap -> {
+            int color = colorInvert(bitmap.getPixel(x, y));
+            textView.setTextColor(color);
+        });
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    netSpeedTextViewPortrait.setText(DataSizeUtil.format(getNetSpeed()) + "/s");
-                    netSpeedTextViewLandscape.setText(DataSizeUtil.format(getNetSpeed()) + "/s");
+                    textView.setText(DataSizeUtil.format(getNetSpeed()) + "/s");
                 });
             }
         }, 0, 800);
+    }
+
+    private int colorInvert(int pixel) {
+        int redValue = Math.abs(255 - Color.red(pixel));
+        int greenValue = Math.abs(255 - Color.green(pixel));
+        int blueValue = Math.abs(255 - Color.blue(pixel));
+        return Color.rgb(redValue, greenValue, blueValue);
     }
 
     @Override

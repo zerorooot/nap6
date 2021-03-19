@@ -460,7 +460,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     }
 
     @SuppressWarnings("all")
-    private void showBottomNavigationView() {
+    public void showBottomNavigationView() {
         BottomNavigationView bottomNavigationView = fileViewModel.getBottomNavigationView();
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) bottomNavigationView.getLayoutParams();
         HideBottomViewOnScrollBehavior<BottomNavigationView> behavior = (HideBottomViewOnScrollBehavior<BottomNavigationView>) layoutParams.getBehavior();
