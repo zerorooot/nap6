@@ -328,12 +328,18 @@ public class FileViewModel extends AndroidViewModel {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 JsonArray returnJson = new Gson().fromJson(Objects.requireNonNull(response.body()).string(), JsonObject.class).getAsJsonArray("dataList");
                 ArrayList<FileBean> fileBeanArrayList = new ArrayList<>();
-                for (int i = 0; i < returnJson.size(); i++) {
-                    FileBean fileBean = setTimeAndPathAndSize(returnJson, i);
-                    if (!fileBean.isDeleted()) {
-                        fileBeanArrayList.add(fileBean);
+                //{"success":false,"status":500,"reference":"INTERNAL_SERVER_ERROR","message":"INTERNAL_SERVER_ERROR","extra":"Received message larger than max (6568809 vs. 4194304)"}
+                if (returnJson != null) {
+                    for (int i = 0; i < returnJson.size(); i++) {
+                        FileBean fileBean = setTimeAndPathAndSize(returnJson, i);
+                        if (!fileBean.isDeleted()) {
+                            fileBeanArrayList.add(fileBean);
+                        }
                     }
-
+                } else {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        Toast.makeText(getApplication(), "Received message larger than max", Toast.LENGTH_SHORT).show();
+                    });
                 }
 
                 mutableLiveData.postValue(fileBeanArrayList);
