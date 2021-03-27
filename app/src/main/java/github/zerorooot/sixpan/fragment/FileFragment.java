@@ -256,7 +256,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
     private void floatingAddActionButtonClick(View v) {
         if (binding.floatingCutActionButton.getVisibility() == View.GONE) {
-            createNewFile(v.getContext(), v.findViewById(R.id.dialog_layout));
+            createNewFolder(v.getContext(), v.findViewById(R.id.dialog_layout));
         } else {
             beSelectFileBean = null;
             binding.floatingAddActionButton.setImageResource(R.drawable.ic_baseline_add_24);
@@ -264,11 +264,10 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         }
     }
 
-
-    private void createNewFile(Context c, FrameLayout dialog) {
-        View inflate = LayoutInflater.from(c).inflate(R.layout.material_dialog, dialog, false);
+    private void createNewFolder(Context c, FrameLayout dialog) {
+        View inflate = LayoutInflater.from(c).inflate(R.layout.create_new_folder_dialog, dialog, false);
         TextInputLayout textInputLayout = inflate.findViewById(R.id.dialog_textInput);
-        textInputLayout.setHint("文件名称");
+        textInputLayout.setHint("文件夹名称");
         TextInputEditText editInputLayout = inflate.findViewById(R.id.dialog_editText);
         editInputLayout.setFocusable(true);
         editInputLayout.requestFocus();
@@ -278,9 +277,45 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                 .setNegativeButton("取消", null)
                 .setPositiveButton("确定", (dialog1, which) -> {
                     String newName = editInputLayout.getText().toString();
-                    fileViewModel.createFolder(binding.filePath.getText().toString(), newName).observe(getViewLifecycleOwner(), fresh -> {
-                        if (fresh) {
+                    if (!"".equals(newName)) {
+                        fileViewModel.createFolder(binding.filePath.getText().toString(), newName).observe(getViewLifecycleOwner(), fresh -> {
+                            if (fresh) {
+                                binding.swipeRefreshLayout.setRefreshing(true);
+                                swipeRefresh();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(c, "文件名不能为空", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNeutralButton("新建文本", (dialog1, which) -> {
+                    createTextFile(c, dialog, editInputLayout.getText().toString());
+                })
+                .show();
+    }
+
+    private void createTextFile(Context c, FrameLayout dialog, String textName) {
+        View inflate = LayoutInflater.from(c).inflate(R.layout.create_new_text_file_dialog, dialog, false);
+        TextInputEditText textNameInputEditText = inflate.findViewById(R.id.dialogTextNameInput);
+        TextInputEditText textContentInputEditText = inflate.findViewById(R.id.dialogTextContentInput);
+        if (!"".equals(textName)) {
+            textNameInputEditText.setText(textName);
+            textContentInputEditText.requestFocus();
+        }
+        MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(c);
+        materialAlertDialogBuilder.setTitle("新建文本")
+                .setView(inflate)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", (dialog1, which) -> {
+                    String name = textNameInputEditText.getText().toString();
+                    String content = textContentInputEditText.getText().toString();
+                    fileViewModel.uploadText(name, content, fileViewModel.getPath()).observe(getViewLifecycleOwner(), success -> {
+                        if (success) {
+                            Toast.makeText(c, "新建 " + name + " 成功", Toast.LENGTH_SHORT).show();
+                            binding.swipeRefreshLayout.setRefreshing(true);
                             swipeRefresh();
+                        } else {
+                            Toast.makeText(c, "创建文件 " + name + " 失败", Toast.LENGTH_SHORT).show();
                         }
                     });
                 })
@@ -599,7 +634,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                 }
 
                 if (item.getItemId() == R.id.item_reverse) {
-                    itemReverseSelect();
+                    itemSelectReverse();
                 }
 
                 if (item.getItemId() == R.id.item_move) {
@@ -665,7 +700,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         itemSelect(value);
     }
 
-    private void itemReverseSelect() {
+    private void itemSelectReverse() {
         List<FileBean> value = liveData.getValue();
         value.forEach(s -> {
             s.setSelect(!s.isSelect());
@@ -875,6 +910,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
             fileViewModel.downloadFile(url).observe(this, content -> {
                 binding.swipeRefreshLayout.setRefreshing(false);
                 textDialog.setContent(content);
+                textDialog.setTitle(fileBean.getName());
                 textDialog.show(requireActivity().getSupportFragmentManager());
             });
         });

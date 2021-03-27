@@ -28,6 +28,7 @@ import lombok.Setter;
 public class TextDialog extends DialogFragment {
     private int visibility;
     private byte[] content;
+    private String title;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,9 @@ public class TextDialog extends DialogFragment {
         getDialog().setCanceledOnTouchOutside(true);
 
         View v = inflater.inflate(R.layout.text_dialog, container, false);
+        TextView textTitleTextView = v.findViewById(R.id.textTitleTextView);
+        textTitleTextView.setVisibility(visibility);
+        textTitleTextView.setText(title);
 
         TextInputLayout textInputLayout = v.findViewById(R.id.codeEditViewLayout);
         textInputLayout.setVisibility(visibility);

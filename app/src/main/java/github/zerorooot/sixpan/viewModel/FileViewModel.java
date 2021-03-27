@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.unit.DataSizeUtil;
+import cn.hutool.core.lang.UUID;
 import github.zerorooot.sixpan.bean.ApiUrl;
 import github.zerorooot.sixpan.bean.FileBean;
 import github.zerorooot.sixpan.bean.OffLineBean;
@@ -387,7 +388,7 @@ public class FileViewModel extends AndroidViewModel {
      */
     public MutableLiveData<String> downloadZip(ArrayList<FileBean> fileBeanArrayList) {
         MutableLiveData<String> liveData = new MutableLiveData<>();
-        String url = ApiUrl.PACKUP_DOWNLOAD;
+        String url = ApiUrl.PACK_UP_DOWNLOAD;
         JsonArray jsonArray = new JsonArray();
         for (FileBean fileBean : fileBeanArrayList) {
             jsonArray.add(fileBean.getIdentity());
@@ -506,6 +507,98 @@ public class FileViewModel extends AndroidViewModel {
 
 //                getAllFile(fileBeanList.get(0).getParentPath());
                 //updateCache(fileBeanList.get(0).getParentPath());
+            }
+        });
+    }
+
+    /**
+     * 上传txt文件
+     *
+     * @param name    文件名
+     * @param content 文件内容
+     * @param path    路径
+     * @return 是否成功
+     */
+    public MutableLiveData<Boolean> uploadText(String name, String content, String path) {
+        MutableLiveData<Boolean> liveData = new MutableLiveData<>();
+        String url = ApiUrl.UPLOAD_TOKEN;
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("hash", toMd5(content));
+        jsonObject.addProperty("name", name);
+        jsonObject.addProperty("op", 32);
+        jsonObject.addProperty("path", path);
+        network(jsonObject, url).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                liveData.postValue(false);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                //{"uploadToken":"xxxx","type":"","filePath":"//name.txt","created":false,"partUploadUrl":"https://upload-vod-v1.qiecdn.com","directUploadUrl":"https://upload-vod-v1.qiecdn.com/file/upload"}
+                JsonObject returnJson = new Gson().fromJson(response.body().string(), JsonObject.class);
+                if (returnJson.has("uploadToken")) {
+                    String uploadToken = returnJson.get("uploadToken").getAsString();
+                    String partUploadUrl = returnJson.get("partUploadUrl").getAsString();
+                    makeBlock(liveData, uploadToken, partUploadUrl, content);
+                } else {
+                    liveData.postValue(false);
+                }
+
+            }
+        });
+        return liveData;
+    }
+
+    private void makeBlock(MutableLiveData<Boolean> liveData, String uploadToken, String partUploadUrl, String content) {
+        String uploadUrl = partUploadUrl + "/mkblk/" + content.getBytes().length + "/0";
+        String uuid = UUID.randomUUID().toString();
+        MediaType mediaType = MediaType.parse("application/octet-stream");
+        Request makeBlockRequest = new Request.Builder()
+                .url(uploadUrl)
+                .post(RequestBody.create(content.getBytes(), mediaType))
+                .addHeader("authorization", uploadToken)
+                .addHeader("UploadBatch", uuid)
+                .build();
+        okHttpClient.newCall(makeBlockRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                liveData.postValue(false);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                //{"ctx":"xx","checksum":"xxx","crc32":xxx,"crc64":0,"offset":xx}
+                JsonObject makeBlockJson = new Gson().fromJson(response.body().string(), JsonObject.class);
+                if (makeBlockJson.has("ctx")) {
+                    String ctx = makeBlockJson.get("ctx").getAsString();
+                    makeFile(liveData, uploadToken, partUploadUrl, content, ctx, uuid);
+                } else {
+                    liveData.postValue(false);
+                }
+            }
+        });
+    }
+
+    private void makeFile(MutableLiveData<Boolean> liveData, String uploadToken, String partUploadUrl, String content, String ctx, String uuid) {
+        String makeFileUrl = partUploadUrl + "/mkfile/" + content.getBytes().length;
+        MediaType mediaType = MediaType.parse("text/plain;charset=UTF-8");
+        Request makeFileRequest = new Request.Builder()
+                .url(makeFileUrl)
+                .post(RequestBody.create(ctx, mediaType))
+                .addHeader("authorization", uploadToken)
+                .addHeader("UploadBatch", uuid)
+                .build();
+        okHttpClient.newCall(makeFileRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                liveData.postValue(false);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+                liveData.postValue(true);
             }
         });
     }

@@ -80,7 +80,8 @@ public class BottomDialog extends BaseBottomDialog {
 
         v.findViewById(R.id.mRlFileInfo).setOnClickListener(e -> {
             MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(requireContext());
-            materialAlertDialogBuilder.setTitle(currentFileBean.getName())
+            materialAlertDialogBuilder
+                    .setTitle(currentFileBean.getName())
                     .setMessage(currentFileBean.toString())
                     .setPositiveButton("确定", null).show();
             this.dismiss();

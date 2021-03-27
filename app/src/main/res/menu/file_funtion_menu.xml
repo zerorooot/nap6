@@ -2,17 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
-    <item
-        android:id="@+id/item_all"
-        android:icon="@drawable/ic_baseline_select_all_24"
-        android:showAsAction="always"
-        android:title="全选" />
     <item
         android:id="@+id/item_reverse"
-        android:icon="@drawable/ic_baseline_select_reverse_24"
+        android:icon="@drawable/ic_baseline_select_all_24"
         android:showAsAction="always"
         android:title="反选" />
+    <item
+        android:id="@+id/item_all"
+        android:icon="@drawable/ic_baseline_select_reverse_24"
+        android:showAsAction="always"
+        android:title="全选" />
     <item
         android:id="@+id/item_move"
         android:icon="@drawable/ic_baseline_content_cut_24"
