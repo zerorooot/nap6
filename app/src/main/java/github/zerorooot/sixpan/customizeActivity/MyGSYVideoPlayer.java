@@ -156,6 +156,13 @@ public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         int batteryPct = level * 100 / scale;
         batteryTextView.setText(batteryPct + "%");
+        //isCharging
+        int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL;
+        if (isCharging) {
+            batteryTextView.setText(batteryTextView.getText()+"  ⚡︎");
+        }
         //时间
         timeTextView.setText(DateUtil.format(new Date(), "HH:mm"));
     }
