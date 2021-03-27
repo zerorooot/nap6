@@ -595,7 +595,11 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 if (item.getItemId() == R.id.item_all) {
-                    itemAll();
+                    itemSelectAll();
+                }
+
+                if (item.getItemId() == R.id.item_reverse) {
+                    itemReverseSelect();
                 }
 
                 if (item.getItemId() == R.id.item_move) {
@@ -653,14 +657,25 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         return callback;
     }
 
-    private void itemAll() {
+    private void itemSelectAll() {
         List<FileBean> value = liveData.getValue();
-        //记录位置，防止乱移
-        fileViewModel.setPosition(fileViewModel.getPath(), linearLayoutManager);
-        assert value != null;
         value.forEach(s -> {
             s.setSelect(true);
         });
+        itemSelect(value);
+    }
+
+    private void itemReverseSelect() {
+        List<FileBean> value = liveData.getValue();
+        value.forEach(s -> {
+            s.setSelect(!s.isSelect());
+        });
+        itemSelect(value);
+    }
+
+    private void itemSelect(List<FileBean> value) {
+        //记录位置，防止乱移
+        fileViewModel.setPosition(fileViewModel.getPath(), linearLayoutManager);
         liveData.postValue(value);
         adapter.notifyDataSetChanged();
         int size = liveData.getValue().stream().filter(FileBean::isSelect).toArray().length;
