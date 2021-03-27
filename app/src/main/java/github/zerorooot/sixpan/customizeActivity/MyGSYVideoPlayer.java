@@ -176,21 +176,27 @@ public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
         int x = (int) netSpeedTextViewLandscape.getX() + netSpeedTextViewLandscape.getWidth() / 2;
         int y = (int) guidelineLandscape.getY();
         if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            y = (int) netSpeedTextViewPortrait.getX() + netSpeedTextViewPortrait.getWidth() / 2;
-            x = (int) guidelinePortrait.getY();
-            setColorAndShow(netSpeedTextViewPortrait, x, y);
+            x = (int) netSpeedTextViewPortrait.getX() + netSpeedTextViewPortrait.getWidth() / 2;
+            y = (int) guidelinePortrait.getY();
+            if (x >= 0 && y >= 0) {
+                setColorAndShow(netSpeedTextViewPortrait, x, y);
+            }
         } else {
-            setColorAndShow(netSpeedTextViewLandscape, x, y);
+            if (x >= 0 && y >= 0) {
+                setColorAndShow(netSpeedTextViewLandscape, x, y);
+            }
         }
     }
 
     private void setColorAndShow(TextView textView, int x, int y) {
         textView.setVisibility(VISIBLE);
-
-        this.taskShotPic(bitmap -> {
-            int color = colorInvert(bitmap.getPixel(x, y));
-            textView.setTextColor(color);
-        });
+        try {
+            this.taskShotPic(bitmap -> {
+                int color = rgbToGray(bitmap.getPixel(x, y));
+                textView.setTextColor(color);
+            });
+        } catch (IllegalArgumentException ignored) {
+        }
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -203,11 +209,13 @@ public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
         }, 0, 800);
     }
 
-    private int colorInvert(int pixel) {
-        int redValue = Math.abs(255 - Color.red(pixel));
-        int greenValue = Math.abs(255 - Color.green(pixel));
-        int blueValue = Math.abs(255 - Color.blue(pixel));
-        return Color.rgb(redValue, greenValue, blueValue);
+    private int rgbToGray(int pixel) {
+        int redValue = Color.red(pixel);
+        int greenValue = Color.green(pixel);
+        int blueValue = Color.blue(pixel);
+        //RGB to GRAY
+        double y = 0.2126 * redValue + 0.7152 * greenValue + 0.0722 * blueValue;
+        return y < 128 ? Color.WHITE : Color.BLACK;
     }
 
     @Override

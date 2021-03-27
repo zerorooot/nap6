@@ -65,7 +65,6 @@ public class VideoActivity extends AppCompatActivity {
         videoPlayer.setSeekRatio(10);
         //设置返回键
         videoPlayer.getBackButton().setVisibility(View.VISIBLE);
-        videoPlayer.setSeekRatio(10);
         videoPlayer.setOrientationUtils(orientationUtils);
 
         //设置默认横屏
