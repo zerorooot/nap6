@@ -25,12 +25,19 @@ import github.zerorooot.sixpan.bean.OffLineParse;
 
 public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDownloadAdapter.OffLineDownloadViewHolder> {
     private final int HEAD_VIEW = 0;
-    private final int BODY_VIEW = 1;
     private OffLineDownloadAdapter.ClickInterface clickInterface;
     private String links;
     private String password;
     private SwipeRefreshLayout offLineSwipe;
+    private String externalLink;
 
+    public void setExternalLink(String externalLink) {
+        this.externalLink = externalLink;
+    }
+
+    public String getLinks() {
+        return links;
+    }
 
     public void setClickInterface(ClickInterface clickInterface) {
         this.clickInterface = clickInterface;
@@ -82,6 +89,12 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
                     password = s.toString();
                 }
             });
+
+            //设置外部分享来的链接
+            if (Objects.nonNull(externalLink)) {
+                viewHolder.offline_by_links_editText_links.setText(externalLink);
+            }
+
             viewHolder.offline_new_by_links_button_parse.setOnClickListener(e -> {
                 clickInterface.parseClick(links, password);
             });
@@ -138,7 +151,7 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
 
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? HEAD_VIEW : BODY_VIEW;
+        return position == 0 ? HEAD_VIEW : 1;
     }
 
     public static class OffLineDownloadViewHolder extends RecyclerView.ViewHolder {

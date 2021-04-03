@@ -2,6 +2,9 @@ package github.zerorooot.sixpan.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,17 +14,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import java.util.Objects;
 
 import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.activity.FileActivity;
 import github.zerorooot.sixpan.bean.TokenBean;
 import github.zerorooot.sixpan.uitl.SharedPreferencesUtil;
-import github.zerorooot.sixpan.viewModel.FileViewModel;
 import github.zerorooot.sixpan.viewModel.LoginViewModel;
 
 

@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,6 +24,7 @@ import github.zerorooot.sixpan.databinding.ActivityFileBinding;
 import github.zerorooot.sixpan.fragment.AboutMeFragment;
 import github.zerorooot.sixpan.fragment.FileFragment;
 import github.zerorooot.sixpan.fragment.OffLineListAndDownloadFragment;
+import github.zerorooot.sixpan.uitl.SharedPreferencesUtil;
 import github.zerorooot.sixpan.viewModel.FileViewModel;
 
 public class FileActivity extends AppCompatActivity {
@@ -45,31 +47,37 @@ public class FileActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String token = intent.getStringExtra("token");
+        String externalLink = null;
+        //通过分享启动
+        if (Objects.isNull(token)) {
+            token = new SharedPreferencesUtil(getBaseContext()).get().getToken();
+            externalLink = getIntentData(intent);
+        }
+
         FileViewModel fileViewModel = new ViewModelProvider(this, new SavedStateViewModelFactory(getApplication(), this)).get(FileViewModel.class);
         fileViewModel.setToken(token);
         fileViewModel.setBottomNavigationView(bottomNavigationView);
 
-        //防止重叠
-        if (savedInstanceState == null) {
-            fileFragment = new FileFragment();
-            currentFragment = fileFragment;
-            offLineListAndDownloadFragment = new OffLineListAndDownloadFragment();
-            aboutMeFragment = new AboutMeFragment();
-            fm.beginTransaction().add(R.id.fragment2, aboutMeFragment, "3").hide(aboutMeFragment).commit();
-            fm.beginTransaction().add(R.id.fragment2, offLineListAndDownloadFragment, "2").hide(offLineListAndDownloadFragment).commit();
-            fm.beginTransaction().add(R.id.fragment2, fileFragment, "1").commit();
-        } else {
-            fileFragment = (FileFragment) getSupportFragmentManager().getFragment(savedInstanceState, "1");
-            offLineListAndDownloadFragment = (OffLineListAndDownloadFragment) getSupportFragmentManager().getFragment(savedInstanceState, "2");
-            aboutMeFragment = (AboutMeFragment) getSupportFragmentManager().getFragment(savedInstanceState, "3");
-            currentFragment = getSupportFragmentManager().getFragment(savedInstanceState, "4");
-        }
-
+        preventFragmentOverlaps(savedInstanceState);
 
         //左上角返回
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        setBottomNavigationViewSelected(bottomNavigationView);
 
+        //外部分享来的链接
+        if (Objects.nonNull(externalLink)) {
+            setExtraMessage(externalLink);
+        }
+    }
+
+    /**
+     * 设置bottomNavigationView跳转
+     *
+     * @param bottomNavigationView
+     */
+    @SuppressWarnings("all")
+    private void setBottomNavigationViewSelected(BottomNavigationView bottomNavigationView) {
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.fileFragment:
@@ -105,6 +113,28 @@ public class FileActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * 防止fragment重叠
+     *
+     * @param savedInstanceState savedInstanceState
+     */
+    private void preventFragmentOverlaps(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            fileFragment = new FileFragment();
+            currentFragment = fileFragment;
+            offLineListAndDownloadFragment = new OffLineListAndDownloadFragment();
+            aboutMeFragment = new AboutMeFragment();
+            fm.beginTransaction().add(R.id.fragment2, aboutMeFragment, "3").hide(aboutMeFragment).commit();
+            fm.beginTransaction().add(R.id.fragment2, offLineListAndDownloadFragment, "2").hide(offLineListAndDownloadFragment).commit();
+            fm.beginTransaction().add(R.id.fragment2, fileFragment, "1").commit();
+        } else {
+            fileFragment = (FileFragment) getSupportFragmentManager().getFragment(savedInstanceState, "1");
+            offLineListAndDownloadFragment = (OffLineListAndDownloadFragment) getSupportFragmentManager().getFragment(savedInstanceState, "2");
+            aboutMeFragment = (AboutMeFragment) getSupportFragmentManager().getFragment(savedInstanceState, "3");
+            currentFragment = getSupportFragmentManager().getFragment(savedInstanceState, "4");
+        }
     }
 
     @Override
@@ -143,4 +173,28 @@ public class FileActivity extends AppCompatActivity {
         fm.putFragment(outState, "3", aboutMeFragment);
         fm.putFragment(outState, "4", currentFragment);
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String intentData = getIntentData(intent);
+        setExtraMessage(intentData);
+    }
+
+    private void setExtraMessage(String externalLink) {
+        offLineListAndDownloadFragment.setExternalLink(externalLink);
+        fm.beginTransaction().hide(currentFragment).show(offLineListAndDownloadFragment).commit();
+        currentFragment = offLineListAndDownloadFragment;
+        binding.bottomNavigationView.setSelectedItemId(R.id.offLineListAndDownloadFragment);
+    }
+
+    private String getIntentData(Intent intent) {
+        //android.intent.action.SEND   extra-text
+        //android.intent.action.VIEW   getDataString
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            return intent.getDataString();
+        }
+        return intent.getStringExtra(Intent.EXTRA_TEXT);
+    }
+
 }

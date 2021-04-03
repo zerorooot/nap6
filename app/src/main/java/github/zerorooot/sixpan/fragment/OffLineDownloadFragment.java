@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import github.zerorooot.sixpan.adapter.OffLineDownloadAdapter;
@@ -37,6 +38,13 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
     private final MutableLiveData<List<OffLineParse>> offLineParseLiveData = new MutableLiveData<>();
     private OffLineDownloadAdapter adapter;
     private String offLinePath = "/";
+
+    private String externalLink;
+
+
+    public void setExternalLink(String externalLink) {
+        this.externalLink = externalLink;
+    }
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
@@ -52,6 +60,8 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
 
         adapter = new OffLineDownloadAdapter();
         adapter.setClickInterface(this);
+        adapter.setExternalLink(externalLink);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
         binding.recyclerView.setAdapter(adapter);
 
@@ -67,6 +77,24 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
         });
 
         adapter.setOffLineSwipe(binding.offLineSwipe);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (Objects.nonNull(adapter) && Objects.nonNull(externalLink)) {
+            String links = adapter.getLinks();
+            if (Objects.nonNull(links)) {
+                links = links + "\n" + externalLink;
+            } else {
+                links = externalLink;
+            }
+            adapter.setExternalLink(links);
+            binding.recyclerView.setAdapter(adapter);
+            parseClick(links, null);
+            //清空，防止重复添加
+            externalLink = null;
+        }
     }
 
 

@@ -12,24 +12,27 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.Objects;
+
 import github.zerorooot.sixpan.R;
 
 
 public class OffLineListAndDownloadFragment extends Fragment {
-//    private static OffLineListAndDownloadFragment instance = new OffLineListAndDownloadFragment();
-//
-//
-//
-//    public static OffLineListAndDownloadFragment newInstance() {
-//        return instance;
-//    }
+    private String externalLink;
+    private OffLineDownloadFragment offLineDownloadFragment;
+    private ViewPager2 viewPager2;
+    private String currentLink;
+
+    public void setExternalLink(String externalLink) {
+        this.externalLink = externalLink;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_offline_list_and_download, container, false);
-        ViewPager2 viewPager2 = view.findViewById(R.id.fragment_offline_list_and_download_viewPager2);
+        viewPager2 = view.findViewById(R.id.fragment_offline_list_and_download_viewPager2);
         viewPager2.setAdapter(new FragmentStateAdapter(this) {
             @Override
             public int getItemCount() {
@@ -41,12 +44,16 @@ public class OffLineListAndDownloadFragment extends Fragment {
             public Fragment createFragment(int position) {
                 switch (position) {
                     case 0:
-                        return new OffLineDownloadFragment();
+                        offLineDownloadFragment = new OffLineDownloadFragment();
+                        offLineDownloadFragment.setExternalLink(externalLink);
+                        currentLink = externalLink;
+                        return offLineDownloadFragment;
                     case 1:
                         return new OffLineListFragment();
 
                 }
-                return new OffLineDownloadFragment();
+                offLineDownloadFragment.setExternalLink(externalLink);
+                return offLineDownloadFragment;
             }
         });
 
@@ -64,4 +71,16 @@ public class OffLineListAndDownloadFragment extends Fragment {
         return view;
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (Objects.nonNull(externalLink) && Objects.nonNull(offLineDownloadFragment) && !externalLink.equals(currentLink)) {
+            currentLink = externalLink;
+            if (viewPager2.getCurrentItem() == 1) {
+                viewPager2.setCurrentItem(0);
+            }
+            offLineDownloadFragment.setExternalLink(externalLink);
+        }
+    }
 }
