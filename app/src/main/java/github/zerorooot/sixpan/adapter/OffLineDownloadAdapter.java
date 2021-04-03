@@ -105,6 +105,7 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
                 viewHolder.offline_by_links_editText_links.setText("");
                 viewHolder.offline_by_links_editText_password.setText("");
                 this.submitList(null);
+                externalLink = null;
                 offLineSwipe.setRefreshing(false);
             });
 

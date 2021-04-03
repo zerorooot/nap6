@@ -21,10 +21,16 @@ public class OffLineListAndDownloadFragment extends Fragment {
     private String externalLink;
     private OffLineDownloadFragment offLineDownloadFragment;
     private ViewPager2 viewPager2;
-    private String currentLink;
 
     public void setExternalLink(String externalLink) {
         this.externalLink = externalLink;
+        if (Objects.isNull(offLineDownloadFragment)) {
+            return;
+        }
+        if (viewPager2.getCurrentItem() == 1) {
+            viewPager2.setCurrentItem(0);
+        }
+        offLineDownloadFragment.setExternalLink(externalLink);
     }
 
     @Override
@@ -46,7 +52,6 @@ public class OffLineListAndDownloadFragment extends Fragment {
                     case 0:
                         offLineDownloadFragment = new OffLineDownloadFragment();
                         offLineDownloadFragment.setExternalLink(externalLink);
-                        currentLink = externalLink;
                         return offLineDownloadFragment;
                     case 1:
                         return new OffLineListFragment();
@@ -72,15 +77,4 @@ public class OffLineListAndDownloadFragment extends Fragment {
     }
 
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (Objects.nonNull(externalLink) && Objects.nonNull(offLineDownloadFragment) && !externalLink.equals(currentLink)) {
-            currentLink = externalLink;
-            if (viewPager2.getCurrentItem() == 1) {
-                viewPager2.setCurrentItem(0);
-            }
-            offLineDownloadFragment.setExternalLink(externalLink);
-        }
-    }
 }

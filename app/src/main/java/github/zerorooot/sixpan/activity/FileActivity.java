@@ -182,10 +182,12 @@ public class FileActivity extends AppCompatActivity {
     }
 
     private void setExtraMessage(String externalLink) {
+        if (currentFragment != offLineListAndDownloadFragment) {
+            fm.beginTransaction().hide(currentFragment).show(offLineListAndDownloadFragment).commit();
+            currentFragment = offLineListAndDownloadFragment;
+            binding.bottomNavigationView.setSelectedItemId(R.id.offLineListAndDownloadFragment);
+        }
         offLineListAndDownloadFragment.setExternalLink(externalLink);
-        fm.beginTransaction().hide(currentFragment).show(offLineListAndDownloadFragment).commit();
-        currentFragment = offLineListAndDownloadFragment;
-        binding.bottomNavigationView.setSelectedItemId(R.id.offLineListAndDownloadFragment);
     }
 
     private String getIntentData(Intent intent) {

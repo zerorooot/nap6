@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import github.zerorooot.sixpan.adapter.OffLineDownloadAdapter;
@@ -44,6 +45,17 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
 
     public void setExternalLink(String externalLink) {
         this.externalLink = externalLink;
+        if (Objects.nonNull(adapter)) {
+            String links = adapter.getLinks();
+            StringJoiner stringJoiner = new StringJoiner("\n");
+            if (Objects.nonNull(links) && !"".equals(links)) {
+                stringJoiner.add(links);
+            }
+            stringJoiner.add(externalLink);
+            adapter.setExternalLink(stringJoiner.toString());
+            binding.recyclerView.setAdapter(adapter);
+            parseClick(stringJoiner.toString(), null);
+        }
     }
 
     @Override
@@ -60,7 +72,11 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
 
         adapter = new OffLineDownloadAdapter();
         adapter.setClickInterface(this);
-        adapter.setExternalLink(externalLink);
+        if (Objects.nonNull(externalLink)) {
+            adapter.setExternalLink(externalLink);
+            parseClick(externalLink, null);
+        }
+
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
         binding.recyclerView.setAdapter(adapter);
@@ -77,24 +93,6 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
         });
 
         adapter.setOffLineSwipe(binding.offLineSwipe);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (Objects.nonNull(adapter) && Objects.nonNull(externalLink)) {
-            String links = adapter.getLinks();
-            if (Objects.nonNull(links)) {
-                links = links + "\n" + externalLink;
-            } else {
-                links = externalLink;
-            }
-            adapter.setExternalLink(links);
-            binding.recyclerView.setAdapter(adapter);
-            parseClick(links, null);
-            //清空，防止重复添加
-            externalLink = null;
-        }
     }
 
 
