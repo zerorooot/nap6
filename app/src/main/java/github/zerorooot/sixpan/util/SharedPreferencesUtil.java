@@ -1,4 +1,4 @@
-package github.zerorooot.sixpan.uitl;
+package github.zerorooot.sixpan.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;

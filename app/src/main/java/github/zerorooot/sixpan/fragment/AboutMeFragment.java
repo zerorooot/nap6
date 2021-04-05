@@ -32,7 +32,7 @@ import github.zerorooot.sixpan.bean.ApiUrl;
 import github.zerorooot.sixpan.bean.TokenBean;
 import github.zerorooot.sixpan.bean.UserInfoBean;
 import github.zerorooot.sixpan.databinding.FragmentAboutMeBinding;
-import github.zerorooot.sixpan.uitl.SharedPreferencesUtil;
+import github.zerorooot.sixpan.util.SharedPreferencesUtil;
 import github.zerorooot.sixpan.viewModel.FileViewModel;
 import okhttp3.Call;
 import okhttp3.Callback;
