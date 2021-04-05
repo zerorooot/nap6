@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,10 +23,12 @@ import android.widget.Toast;
 
 import java.util.Objects;
 
+import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.activity.FileActivity;
 import github.zerorooot.sixpan.bean.TokenBean;
 import github.zerorooot.sixpan.databinding.FragmentLoginBinding;
-import github.zerorooot.sixpan.util.SharedPreferencesUtil;
+import github.zerorooot.sixpan.uitl.SharedPreferencesUtil;
+import github.zerorooot.sixpan.viewModel.FileViewModel;
 import github.zerorooot.sixpan.viewModel.LoginViewModel;
 
 public class LoginFragment extends Fragment {

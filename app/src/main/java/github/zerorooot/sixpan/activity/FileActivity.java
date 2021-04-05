@@ -27,7 +27,7 @@ import github.zerorooot.sixpan.databinding.ActivityFileBinding;
 import github.zerorooot.sixpan.fragment.AboutMeFragment;
 import github.zerorooot.sixpan.fragment.FileFragment;
 import github.zerorooot.sixpan.fragment.OffLineListAndDownloadFragment;
-import github.zerorooot.sixpan.util.SharedPreferencesUtil;
+import github.zerorooot.sixpan.uitl.SharedPreferencesUtil;
 import github.zerorooot.sixpan.viewModel.FileViewModel;
 
 public class FileActivity extends AppCompatActivity {
