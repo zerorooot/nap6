@@ -2,7 +2,9 @@ package github.zerorooot.sixpan.activity;
 
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -20,6 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import github.zerorooot.sixpan.R;
+import github.zerorooot.sixpan.customizeActivity.SingleDownloadBroadcastReceiver;
 import github.zerorooot.sixpan.databinding.ActivityFileBinding;
 import github.zerorooot.sixpan.fragment.AboutMeFragment;
 import github.zerorooot.sixpan.fragment.FileFragment;
@@ -35,6 +38,7 @@ public class FileActivity extends AppCompatActivity {
     private FileFragment fileFragment;
     private OffLineListAndDownloadFragment offLineListAndDownloadFragment;
     private AboutMeFragment aboutMeFragment;
+    private final BroadcastReceiver singleDownloadBroadcastReceiver = new SingleDownloadBroadcastReceiver();
 
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -69,6 +73,18 @@ public class FileActivity extends AppCompatActivity {
         if (Objects.nonNull(externalLink)) {
             setExtraMessage(externalLink);
         }
+
+
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(SingleDownloadBroadcastReceiver.TAG);
+        registerReceiver(singleDownloadBroadcastReceiver, filter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(singleDownloadBroadcastReceiver);
     }
 
     /**

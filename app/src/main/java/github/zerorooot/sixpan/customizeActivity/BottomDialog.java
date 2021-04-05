@@ -113,38 +113,14 @@ public class BottomDialog extends BaseBottomDialog {
     private void download(View v) {
         ClipboardManager clipboard = (ClipboardManager) v.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
 
-        if (currentFileBean.isDirectory()) {
-            ArrayList<FileBean> arrayList = new ArrayList<>();
-            arrayList.add(currentFileBean);
-            fileViewModel.downloadZip(arrayList).observe(requireActivity(), s -> {
-                ClipData clip = ClipData.newPlainText("downloadZip", s);
-                clipboard.setPrimaryClip(clip);
-
-                Toast.makeText(v.getContext(), "下载链接已输出到剪贴板", Toast.LENGTH_SHORT).show();
-            });
-
-            return;
-        }
-
-        fileViewModel.downloadSingle(currentFileBean.getIdentity()).observe(requireActivity(), s -> {
+        fileViewModel.download(currentFileBean,true).observe(requireActivity(), s -> {
+            if (s == null) {
+                return;
+            }
             ClipData clip = ClipData.newPlainText("downloadSingle", s);
             clipboard.setPrimaryClip(clip);
             Toast.makeText(v.getContext(), "下载链接已输出到剪贴板", Toast.LENGTH_SHORT).show();
         });
     }
 
-    private void showRenameDialog(Context c) {
-//        EditText fileNameEditText = new EditText(c);
-//        fileNameEditText.setText(currentFileBean.getName());
-//        AlertDialog dialog = new AlertDialog.Builder(c)
-//                .setTitle("重命名文件")
-//                .setView(fileNameEditText)
-//                .setPositiveButton("确定", (dialog1, which) -> {
-//                    String newName = String.valueOf(fileNameEditText.getText());
-//                    fileViewModel.rename(currentFileBean, newName);
-//                })
-//                .setNegativeButton("取消", null)
-//                .create();
-//        dialog.show();
-    }
 }

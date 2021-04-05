@@ -117,7 +117,7 @@ public class OffLineListFragment extends Fragment implements OffLineFileAdapter.
         }
         if (offLineBean.getFileMime().contains("video")) {
             Intent intent = new Intent(requireActivity(), VideoActivity.class);
-            fileViewModel.downloadSingle(offLineBean.getAccessIdentity()).observe(this, s -> {
+            fileViewModel.downloadSingle(offLineBean.getAccessIdentity(),true).observe(this, s -> {
                 intent.putExtra("address", s);
                 intent.putExtra("title", offLineBean.getName());
                 startActivity(intent);

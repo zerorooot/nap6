@@ -354,7 +354,7 @@ public class FileViewModel extends AndroidViewModel {
      *
      * @param identity 文件识别号
      */
-    public MutableLiveData<String> downloadSingle(String identity) {
+    public MutableLiveData<String> downloadSingle(String identity, boolean showToast) {
         MutableLiveData<String> liveData = new MutableLiveData<>();
         String url = ApiUrl.DOWNLOAD;
         JsonObject jsonObject = new JsonObject();
@@ -370,15 +370,26 @@ public class FileViewModel extends AndroidViewModel {
                 JsonObject returnJson = new Gson().fromJson(Objects.requireNonNull(response.body()).string(), JsonObject.class);
                 if (returnJson.get("downloadAddress") != null) {
                     liveData.postValue(returnJson.get("downloadAddress").getAsString());
-                    return;
+                } else {
+                    if (showToast) {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            Toast.makeText(getApplication(), "获取下载地址失败，请刷新后再试试", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                    liveData.postValue(null);
                 }
-
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    Toast.makeText(getApplication(), "获取下载地址失败，请刷新后再试试", Toast.LENGTH_SHORT).show();
-                });
             }
         });
         return liveData;
+    }
+
+    public MutableLiveData<String> download(FileBean fileBean,boolean showToast) {
+        if (fileBean.isDirectory()) {
+            ArrayList<FileBean> fileBeans = new ArrayList<>();
+            fileBeans.add(fileBean);
+            return downloadZip(fileBeans, showToast);
+        }
+        return downloadSingle(fileBean.getIdentity(), showToast);
     }
 
     /**
@@ -386,7 +397,7 @@ public class FileViewModel extends AndroidViewModel {
      *
      * @param fileBeanArrayList list
      */
-    public MutableLiveData<String> downloadZip(ArrayList<FileBean> fileBeanArrayList) {
+    public MutableLiveData<String> downloadZip(ArrayList<FileBean> fileBeanArrayList, boolean showToast) {
         MutableLiveData<String> liveData = new MutableLiveData<>();
         String url = ApiUrl.PACK_UP_DOWNLOAD;
         JsonArray jsonArray = new JsonArray();
@@ -408,9 +419,12 @@ public class FileViewModel extends AndroidViewModel {
                 //{"success":false,"status":422,"reference":"TOTAL_SIZE_LIMIT","message":"文件总大小超过限制"}
                 if (Objects.nonNull(returnJson.get("success"))) {
                     //Looper.getMainLooper()
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        Toast.makeText(getApplication().getApplicationContext(), returnJson.toString(), Toast.LENGTH_SHORT).show();
-                    });
+                    if (showToast) {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            Toast.makeText(getApplication().getApplicationContext(), returnJson.toString(), Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                    liveData.postValue(null);
                     return;
                 }
                 liveData.postValue(returnJson.get("downloadAddress").getAsString());

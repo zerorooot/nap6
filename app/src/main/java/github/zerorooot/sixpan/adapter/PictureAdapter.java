@@ -61,7 +61,7 @@ public class PictureAdapter extends ListAdapter<FileBean, PictureAdapter.Picture
     public void onBindViewHolder(@NonNull PictureViewHolder holder, int position) {
         FileBean item = getItem(position);
         holder.swipeRefreshLayout.setRefreshing(true);
-        fileViewModel.downloadSingle(item.getIdentity()).observe(activity, s -> {
+        fileViewModel.downloadSingle(item.getIdentity(), true).observe(activity, s -> {
             Glide.with(activity)
                     .load(s)
                     .placeholder(R.drawable.ic_baseline_image_24)

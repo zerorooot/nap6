@@ -1,6 +1,7 @@
 package github.zerorooot.sixpan.bean;
 
 
+import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
@@ -8,8 +9,6 @@ import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import android.os.Parcel;
 
 @AllArgsConstructor
 @Data
@@ -28,13 +27,14 @@ public class FileBean implements Serializable, Parcelable {
     private String parentPath;
     private String sizeString;
     private boolean select;
-
+    private String message;
 
     protected FileBean(Parcel in) {
         path = in.readString();
         name = in.readString();
         directory = in.readByte() != 0;
         size = in.readLong();
+        deleted = in.readByte() != 0;
         identity = in.readString();
         atime = in.readLong();
         dateTime = in.readString();
@@ -42,6 +42,7 @@ public class FileBean implements Serializable, Parcelable {
         parentPath = in.readString();
         sizeString = in.readString();
         select = in.readByte() != 0;
+        message = in.readString();
     }
 
     public static final Creator<FileBean> CREATOR = new Creator<FileBean>() {
@@ -67,6 +68,7 @@ public class FileBean implements Serializable, Parcelable {
         dest.writeString(name);
         dest.writeByte((byte) (directory ? 1 : 0));
         dest.writeLong(size);
+        dest.writeByte((byte) (deleted ? 1 : 0));
         dest.writeString(identity);
         dest.writeLong(atime);
         dest.writeString(dateTime);
@@ -74,5 +76,6 @@ public class FileBean implements Serializable, Parcelable {
         dest.writeString(parentPath);
         dest.writeString(sizeString);
         dest.writeByte((byte) (select ? 1 : 0));
+        dest.writeString(message);
     }
 }

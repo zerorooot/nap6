@@ -1,6 +1,9 @@
 package github.zerorooot.sixpan.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -23,6 +26,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateViewModelFactory;
@@ -44,10 +49,13 @@ import org.jetbrains.annotations.NotNull;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -58,6 +66,7 @@ import github.zerorooot.sixpan.activity.VideoActivity;
 import github.zerorooot.sixpan.adapter.FileAdapter;
 import github.zerorooot.sixpan.bean.FileBean;
 import github.zerorooot.sixpan.customizeActivity.BottomDialog;
+import github.zerorooot.sixpan.customizeActivity.SingleDownloadBroadcastReceiver;
 import github.zerorooot.sixpan.customizeActivity.TextDialog;
 import github.zerorooot.sixpan.databinding.FragmentFileBinding;
 import github.zerorooot.sixpan.viewModel.FileViewModel;
@@ -92,7 +101,6 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         fileViewModel = new ViewModelProvider(requireActivity(), new SavedStateViewModelFactory(requireActivity().getApplication(), this)).get(FileViewModel.class);
         //创建菜单
         setHasOptionsMenu(true);
-
 
         return view;
     }
@@ -530,7 +538,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
     private void playVideo(FileBean fileBean) {
         Intent intent = new Intent(requireActivity(), VideoActivity.class);
-        fileViewModel.downloadSingle(fileBean.getIdentity()).observe(this, s -> {
+        fileViewModel.downloadSingle(fileBean.getIdentity(), true).observe(this, s -> {
             intent.putExtra("address", s);
             intent.putExtra("title", fileBean.getName());
             startActivity(intent);
@@ -756,11 +764,127 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
             return;
         }
 
-        fileViewModel.downloadZip((ArrayList<FileBean>) collect).observe(getViewLifecycleOwner(), s -> {
-            ClipData clip = ClipData.newPlainText("downloadSingle", s);
-            clipboard.setPrimaryClip(clip);
-            Toast.makeText(requireContext(), "下载链接已输出到剪贴板", Toast.LENGTH_SHORT).show();
+        MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(requireContext());
+        materialAlertDialogBuilder
+                .setTitle("请选择下载方式")
+                .setMessage("单独下载->分别获取文件的链接\n打包下载->将文件压缩成zip并下载")
+                .setNeutralButton("单独下载", (dialog, which) -> {
+                    singleDownload(collect);
+                })
+                .setNegativeButton("打包下载", (dialog, which) -> {
+                    fileViewModel.downloadZip((ArrayList<FileBean>) collect, true).observe(getViewLifecycleOwner(), s -> {
+                        if (s == null) {
+                            return;
+                        }
+                        ClipData clip = ClipData.newPlainText("downloadSingle", s);
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(requireContext(), "下载链接已输出到剪贴板", Toast.LENGTH_SHORT).show();
+                    });
+                })
+                .show();
+    }
+
+    private void singleDownload(List<FileBean> collect) {
+        MutableLiveData<ArrayList<FileBean>> liveData = new MutableLiveData<>();
+        ArrayList<FileBean> fileBeanArrayList = new ArrayList<>();
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+        NotificationCompat.Builder builder = showDownloadProgressNotification(notificationManager, collect.size());
+
+        Toast.makeText(requireContext(), "后台获取链接中......", Toast.LENGTH_SHORT).show();
+
+        //更新进度
+        collect.forEach(s -> {
+            fileViewModel.download(s, false).observe(getViewLifecycleOwner(), downloadUrl -> {
+                s.setMessage(downloadUrl);
+                fileBeanArrayList.add(s);
+                liveData.postValue(fileBeanArrayList);
+                builder.setProgress(collect.size(), fileBeanArrayList.size(), false);
+                notificationManager.notify(100, builder.build());
+            });
         });
+        //输出结果
+        liveData.observe(getViewLifecycleOwner(), list -> {
+            if (list.size() == collect.size()) {
+                notificationManager.cancel(100);
+                showDownloadResultNotification(notificationManager, list);
+            }
+        });
+    }
+
+    private NotificationCompat.Builder showDownloadProgressNotification(NotificationManagerCompat notificationManager, int size) {
+        createNotificationChannel("DownloadProgressNotification", NotificationManager.IMPORTANCE_LOW);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "DownloadProgressNotification");
+        builder.setContentTitle("获取下载链接中")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setPriority(NotificationCompat.PRIORITY_LOW);
+        int PROGRESS_CURRENT = 0;
+        builder.setProgress(size, PROGRESS_CURRENT, false);
+        notificationManager.notify(100, builder.build());
+        return builder;
+    }
+
+    private void showDownloadResultNotification(NotificationManagerCompat notificationManager, ArrayList<FileBean> fileBeanArrayList) {
+        PendingIntent closePendingIntent = getPendingIntent(SingleDownloadBroadcastReceiver.EXIT, "true");
+
+        List<FileBean> errorList = fileBeanArrayList.stream()
+                .filter(s -> s.getMessage() == null)
+                .collect(Collectors.toList());
+        Collections.reverse(errorList);
+        StringJoiner errorListString = new StringJoiner("\n");
+        errorList.forEach(s -> {
+            errorListString.add(s.getName());
+        });
+        PendingIntent errorPendingIntent = getPendingIntent(SingleDownloadBroadcastReceiver.ERROR, errorListString.toString());
+
+        List<FileBean> successList = fileBeanArrayList.stream().filter(s -> s.getMessage() != null).collect(Collectors.toList());
+        StringJoiner successListString = new StringJoiner("\n");
+        successList.forEach(s -> {
+            successListString.add(s.getMessage());
+        });
+        PendingIntent outPutIntent = getPendingIntent(SingleDownloadBroadcastReceiver.OUTPUT, successListString.toString());
+
+        String title = "获取下载链接成功";
+        if (errorList.size() != 0) {
+            title = "获取下载链接失败，" + errorList.size() + "项失败，" + (fileBeanArrayList.size() - errorList.size()) + "项成功";
+        }
+        String contentText = "共获取 " + fileBeanArrayList.size() + " 个下载链接";
+        if (errorList.size() != 0) {
+            contentText = "以下文件下载失败\n" + errorListString.toString();
+        }
+
+        createNotificationChannel("DownloadResultNotification", NotificationManager.IMPORTANCE_HIGH);
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(requireContext(), "DownloadResultNotification")
+                .setContentTitle(title)
+                .setContentText(contentText)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(contentText))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .addAction(R.mipmap.ic_launcher, "关闭通知", closePendingIntent)
+                .addAction(R.mipmap.ic_launcher, "输出失败名称", errorPendingIntent)
+                .addAction(R.mipmap.ic_launcher, "输出下载链接", outPutIntent);
+
+
+        notificationManager.notify(SingleDownloadBroadcastReceiver.ID, notification.build());
+    }
+
+    private PendingIntent getPendingIntent(String name, String message) {
+        Intent intent = new Intent();
+        intent.setAction(SingleDownloadBroadcastReceiver.TAG);
+        if (name != null) {
+            intent.putExtra(name, message);
+        }
+        return PendingIntent.getBroadcast(requireContext(), new Random().nextInt(), intent, 0);
+    }
+
+
+    private void createNotificationChannel(String id, int importance) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationManager manager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = new NotificationChannel(id, id, importance);
+            manager.createNotificationChannel(channel);
+        }
     }
 
     private void itemDelete(List<FileBean> collect, int startPosition) {
@@ -906,7 +1030,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
         binding.swipeRefreshLayout.setRefreshing(true);
 
-        fileViewModel.downloadSingle(fileBean.getIdentity()).observe(this, url -> {
+        fileViewModel.downloadSingle(fileBean.getIdentity(), true).observe(this, url -> {
             fileViewModel.downloadFile(url).observe(this, content -> {
                 binding.swipeRefreshLayout.setRefreshing(false);
                 textDialog.setContent(content);
