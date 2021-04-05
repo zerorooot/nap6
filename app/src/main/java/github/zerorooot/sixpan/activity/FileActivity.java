@@ -27,7 +27,7 @@ import github.zerorooot.sixpan.databinding.ActivityFileBinding;
 import github.zerorooot.sixpan.fragment.AboutMeFragment;
 import github.zerorooot.sixpan.fragment.FileFragment;
 import github.zerorooot.sixpan.fragment.OffLineListAndDownloadFragment;
-import github.zerorooot.sixpan.uitl.SharedPreferencesUtil;
+import github.zerorooot.sixpan.util.SharedPreferencesUtil;
 import github.zerorooot.sixpan.viewModel.FileViewModel;
 
 public class FileActivity extends AppCompatActivity {
@@ -73,7 +73,6 @@ public class FileActivity extends AppCompatActivity {
         if (Objects.nonNull(externalLink)) {
             setExtraMessage(externalLink);
         }
-
 
 
         IntentFilter filter = new IntentFilter();
@@ -194,7 +193,9 @@ public class FileActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         String intentData = getIntentData(intent);
-        setExtraMessage(intentData);
+        if (intentData != null) {
+            setExtraMessage(intentData);
+        }
     }
 
     private void setExtraMessage(String externalLink) {

@@ -1,0 +1,24 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="立刻生效">
+        <EditTextPreference
+            app:key="searchNumber"
+            app:title="最大搜索数量" />
+
+        <EditTextPreference
+            app:key="offLinePath"
+            app:title="默认离线位置" />
+
+        <SwitchPreferenceCompat
+            app:key="appCache"
+            app:summaryOn="清除完毕"
+            app:title="清除缓存" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="需要重启">
+        <EditTextPreference
+            app:key="limitCount"
+            app:title="最大请求数量" />
+    </PreferenceCategory>
+</PreferenceScreen>

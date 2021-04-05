@@ -1,7 +1,12 @@
 *.iml
 .gradle
-local.properties
 .idea
+.settings
+.project
+local.properties
 app/src/androidTest
 app/src/test
+app/.settings
+app/.classpath
+app/.project
 build

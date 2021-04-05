@@ -28,11 +28,12 @@ import cn.hutool.core.io.unit.DataSizeUtil;
 import github.zerorooot.sixpan.BuildConfig;
 import github.zerorooot.sixpan.MainActivity;
 import github.zerorooot.sixpan.R;
+import github.zerorooot.sixpan.activity.SettingsActivity;
 import github.zerorooot.sixpan.bean.ApiUrl;
 import github.zerorooot.sixpan.bean.TokenBean;
 import github.zerorooot.sixpan.bean.UserInfoBean;
 import github.zerorooot.sixpan.databinding.FragmentAboutMeBinding;
-import github.zerorooot.sixpan.uitl.SharedPreferencesUtil;
+import github.zerorooot.sixpan.util.SharedPreferencesUtil;
 import github.zerorooot.sixpan.viewModel.FileViewModel;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -104,6 +105,12 @@ public class AboutMeFragment extends Fragment {
         });
         //版本信息
         binding.versionTextView.setText("当前版本 : " + BuildConfig.VERSION_NAME);
+
+        //高级设置
+        binding.mainCheckLoginStatusCard.setOnClickListener(e -> {
+            Intent intent = new Intent(requireActivity(), SettingsActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void getUserInfo() {

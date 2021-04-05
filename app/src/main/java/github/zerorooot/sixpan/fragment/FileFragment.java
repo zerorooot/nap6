@@ -132,15 +132,16 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         adapter.setSupportFragmentManager(requireActivity().getSupportFragmentManager());
         binding.recycleView.setAdapter(adapter);
 
-
+        //观察数据
         liveData.observe(getViewLifecycleOwner(), this::liveDataObserve);
-
+        //刷新
         binding.swipeRefreshLayout.setOnRefreshListener(this::swipeRefresh);
-
+        //添加文件、文件夹
         binding.floatingAddActionButton.setOnClickListener(this::floatingAddActionButtonClick);
-
+        //剪切
         binding.floatingCutActionButton.setOnClickListener(this::floatingCutActionButtonClick);
-
+        //输出当前目录
+        binding.filePath.setOnLongClickListener(this::outPutPath);
 
         binding.recycleView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -167,6 +168,19 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         swipeDelete();
+    }
+
+    /**
+     * 输出当前位置
+     * @param view view
+     * @return true
+     */
+    private boolean outPutPath(View view) {
+        ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("filePath", binding.filePath.getText().toString());
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(requireContext(), "当前目录已输出到剪贴板", Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     /**
@@ -947,7 +961,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
                 return;
             }
             if (!mBackKeyPressed) {
-                Toast.makeText(requireContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "再按一次回到桌面", Toast.LENGTH_SHORT).show();
                 mBackKeyPressed = true;
                 new Timer().schedule(new TimerTask() {
                     @Override

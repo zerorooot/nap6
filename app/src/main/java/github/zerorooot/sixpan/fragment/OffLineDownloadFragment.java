@@ -3,6 +3,7 @@ package github.zerorooot.sixpan.fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -55,6 +57,8 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
             adapter.setExternalLink(stringJoiner.toString());
             binding.recyclerView.setAdapter(adapter);
             parseClick(stringJoiner.toString(), null);
+
+            setDefaultOffLinePath();
         }
     }
 
@@ -75,6 +79,8 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
         if (Objects.nonNull(externalLink)) {
             adapter.setExternalLink(externalLink);
             parseClick(externalLink, null);
+
+            setDefaultOffLinePath();
         }
 
 
@@ -95,6 +101,14 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
         adapter.setOffLineSwipe(binding.offLineSwipe);
     }
 
+    private void setDefaultOffLinePath() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        String defaultOffLinePath = sharedPreferences.getString("offLinePath", "/");
+        if ("/".equals(offLinePath)) {
+            offLinePath = defaultOffLinePath;
+            binding.offlinePath.setText(defaultOffLinePath);
+        }
+    }
 
     @Override
     public void parseClick(String links, String password) {

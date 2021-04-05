@@ -1,6 +1,7 @@
 package github.zerorooot.sixpan.viewModel;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,7 +56,7 @@ import okhttp3.Response;
 
 @Setter
 @Getter
-public class FileViewModel extends AndroidViewModel {
+public class FileViewModel extends AndroidViewModel{
     private final OkHttpClient okHttpClient = new OkHttpClient();
     private MutableLiveData<List<FileBean>> liveData = new MutableLiveData<>();
     private MutableLiveData<List<OffLineBean>> offLineLiveData = new MutableLiveData<>();
@@ -66,10 +68,15 @@ public class FileViewModel extends AndroidViewModel {
     private MutableLiveData<String> pathLiveDate = new MutableLiveData<>();
     private BottomNavigationView bottomNavigationView;
 
-    private int limitCount = 20;
+    private int limitCount;
 
     public FileViewModel(@NonNull Application application) {
         super(application);
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(application.getApplicationContext());
+
+        limitCount = Integer.parseInt(sharedPreferences.getString("limitCount", "20"));
+
     }
 
     public void setPath(String path) {
@@ -311,10 +318,17 @@ public class FileViewModel extends AndroidViewModel {
 
 
     public MutableLiveData<List<FileBean>> search(String path, String fileName) {
+        int size = -1;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplication());
+        String searchNumber = sharedPreferences.getString("searchNumber", "-1");
+        try {
+            size = Integer.parseInt(searchNumber);
+        } catch (Exception ignored) {}
+
         MutableLiveData<List<FileBean>> mutableLiveData = new MutableLiveData<>();
         String url = ApiUrl.LIST;
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("limit", -1);
+        jsonObject.addProperty("limit", size);
         jsonObject.addProperty("name", fileName);
         jsonObject.addProperty("parentIdentity", toMd5(path));
         jsonObject.addProperty("search", true);
@@ -383,7 +397,7 @@ public class FileViewModel extends AndroidViewModel {
         return liveData;
     }
 
-    public MutableLiveData<String> download(FileBean fileBean,boolean showToast) {
+    public MutableLiveData<String> download(FileBean fileBean, boolean showToast) {
         if (fileBean.isDirectory()) {
             ArrayList<FileBean> fileBeans = new ArrayList<>();
             fileBeans.add(fileBean);

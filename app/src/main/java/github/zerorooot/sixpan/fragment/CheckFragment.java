@@ -19,7 +19,7 @@ import java.util.Objects;
 import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.activity.FileActivity;
 import github.zerorooot.sixpan.bean.TokenBean;
-import github.zerorooot.sixpan.uitl.SharedPreferencesUtil;
+import github.zerorooot.sixpan.util.SharedPreferencesUtil;
 import github.zerorooot.sixpan.viewModel.LoginViewModel;
 
 

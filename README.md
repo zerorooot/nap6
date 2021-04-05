@@ -49,6 +49,10 @@ https://github.com/zerorooot/nap6/releases/
 
 ![aboutMe](screenshot/aboutMe.png)
 
+高级设置(我的->个人信息)
+
+![advancedSetup](screenshot/advancedSetup.png)
+
 更多
 
 ![more](screenshot/more.png)
