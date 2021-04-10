@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -73,6 +74,10 @@ public class OffLineListAndDownloadFragment extends Fragment {
 
             }
         }).attach();
+
+        boolean downloadAndListSwitch =  PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean("downloadAndListSwitch", true);
+        viewPager2.setUserInputEnabled(downloadAndListSwitch);
+
         return view;
     }
 

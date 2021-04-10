@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OffLineParse {
     private String hash;
+    private String password;
     private String textLink;
     private boolean ready;
     private String name;

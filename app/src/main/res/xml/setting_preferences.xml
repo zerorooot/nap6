@@ -11,14 +11,17 @@
 
         <ListPreference
             app:key="itemSelect"
+            app:defaultValue="0"
             app:title="多选菜单" />
 
         <ListPreference
             app:key="itemSelectTitle"
+            app:defaultValue="0"
             app:title="多选标题" />
 
         <ListPreference
             app:key="theme"
+            app:defaultValue="1"
             app:title="主题模式" />
 
         <SwitchPreferenceCompat
@@ -31,7 +34,15 @@
     <PreferenceCategory app:title="需要重启">
         <EditTextPreference
             app:key="limitCount"
+            app:defaultValue="20"
             app:title="最大请求数量" />
+
+        <SwitchPreferenceCompat
+            app:key="downloadAndListSwitch"
+            app:summaryOn="允许滑动切换离线下载与离线列表"
+            app:summaryOff="禁止滑动切换离线下载与离线列表"
+            app:defaultValue="true"
+            app:title="滑动切换离线下载与离线列表" />
 
         <SwitchPreferenceCompat
             app:key="recoverDefault"

@@ -116,8 +116,8 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
         List<OffLineParse> offLineParseList = new ArrayList<>();
         for (String s : split) {
             if (!"".equals(s)) {
-                OffLineParse parse = new OffLineParse();
-                parse.setTextLink(s.replace(" ", ""));
+                String link = s.replace(" ", "");
+                OffLineParse parse = getOffLineParse(link, password);
                 offLineParseList.add(parse);
             }
         }
@@ -125,18 +125,32 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
         offLineParseLiveData.setValue(offLineParseList);
 
 
-        if ("".equals(password)) {
-            password = null;
-        }
-
         for (int i = 0; i < offLineParseList.size(); i++) {
             int finalI = i;
-            fileViewModel.offLineParse(offLineParseList.get(i).getTextLink(), password).observe(getViewLifecycleOwner(), o -> {
+            OffLineParse parse = offLineParseList.get(i);
+            fileViewModel.offLineParse(parse.getTextLink(), parse.getPassword()).observe(getViewLifecycleOwner(), o -> {
                 offLineParseLiveData.getValue().set(finalI, o);
                 adapter.notifyItemChanged(finalI + 1);
             });
         }
         binding.recyclerView.scrollToPosition(0);
+    }
+
+    private OffLineParse getOffLineParse(String link, String password) {
+        OffLineParse parse = new OffLineParse();
+        if ("".equals(password)) {
+            password = null;
+        }
+
+        //链接:https://xxxxx提取码:xxx
+        if (link.startsWith("链接:")) {
+            parse.setTextLink(link.substring("链接:".length(), link.indexOf("提取码:")));
+            parse.setPassword(link.substring(link.indexOf("提取码:") + "提取码:".length(), link.indexOf("提取码:") + 8));
+        } else {
+            parse.setTextLink(link);
+            parse.setPassword(password);
+        }
+        return parse;
     }
 
     @Override

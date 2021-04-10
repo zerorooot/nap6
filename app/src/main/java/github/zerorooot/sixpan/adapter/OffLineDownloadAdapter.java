@@ -1,6 +1,7 @@
 package github.zerorooot.sixpan.adapter;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
     private String password;
     private SwipeRefreshLayout offLineSwipe;
     private String externalLink;
+    private int defaultColor;
 
     public void setExternalLink(String externalLink) {
         this.externalLink = externalLink;
@@ -128,7 +130,10 @@ public class OffLineDownloadAdapter extends ListAdapter<OffLineParse, OffLineDow
         holder.offLineParseNameTextView.setText(item.getName());
         holder.offLineParseTextLink.setText(item.getTextLink());
         holder.offLineParseSizeTextView.setText(item.getSizeString());
-        holder.cardView.setCardBackgroundColor(item.isReady() ? Color.CYAN : Color.RED);
+        if (Objects.isNull(defaultColor)) {
+            defaultColor = ((ColorDrawable) holder.cardView.getBackground()).getColor();
+        }
+        holder.cardView.setCardBackgroundColor(item.isReady() ? defaultColor : Color.RED);
     }
 
     @Override

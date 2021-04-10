@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -9,7 +8,6 @@
         android:id="@+id/offline_download_cardview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:foreground="?attr/selectableItemBackground"
         app:cardCornerRadius="8dp"
         app:cardElevation="3dp"
         app:cardPreventCornerOverlap="true"
@@ -50,7 +48,6 @@
                 android:singleLine="true"
                 android:text="TextView"
                 android:textAlignment="textStart"
-                android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/guideline6"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -65,7 +62,6 @@
                 android:layout_marginBottom="2dp"
                 android:text="TextView"
                 android:textAlignment="viewStart"
-                android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline3"
                 app:layout_constraintStart_toStartOf="@+id/guideline4"
@@ -92,7 +88,6 @@
                 android:layout_marginStart="4dp"
                 android:singleLine="true"
                 android:text="TextView"
-                android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline4"
                 app:layout_constraintTop_toTopOf="@+id/guideline6" />
