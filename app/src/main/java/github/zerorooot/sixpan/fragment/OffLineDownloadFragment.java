@@ -42,25 +42,7 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
     private OffLineDownloadAdapter adapter;
     private String offLinePath = "/";
 
-    private String externalLink;
 
-
-    public void setExternalLink(String externalLink) {
-        this.externalLink = externalLink;
-        if (Objects.nonNull(adapter)) {
-            String links = adapter.getLinks();
-            StringJoiner stringJoiner = new StringJoiner("\n");
-            if (Objects.nonNull(links) && !"".equals(links)) {
-                stringJoiner.add(links);
-            }
-            stringJoiner.add(externalLink);
-            adapter.setExternalLink(stringJoiner.toString());
-            binding.recyclerView.setAdapter(adapter);
-            parseClick(stringJoiner.toString(), null);
-
-            setDefaultOffLinePath();
-        }
-    }
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
@@ -76,13 +58,20 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
 
         adapter = new OffLineDownloadAdapter();
         adapter.setClickInterface(this);
-        if (Objects.nonNull(externalLink)) {
-            adapter.setExternalLink(externalLink);
-            parseClick(externalLink, null);
+
+        fileViewModel.getExternalLinkLiveDate().observe(getViewLifecycleOwner(), externalLink -> {
+            String links = adapter.getLinks();
+            StringJoiner stringJoiner = new StringJoiner("\n");
+            if (Objects.nonNull(links) && !"".equals(links)) {
+                stringJoiner.add(links);
+            }
+            stringJoiner.add(externalLink);
+            adapter.setExternalLink(stringJoiner.toString());
+            binding.recyclerView.setAdapter(adapter);
+            parseClick(stringJoiner.toString(), null);
 
             setDefaultOffLinePath();
-        }
-
+        });
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
         binding.recyclerView.setAdapter(adapter);
@@ -215,4 +204,9 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }

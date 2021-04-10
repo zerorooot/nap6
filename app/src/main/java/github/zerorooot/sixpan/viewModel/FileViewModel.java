@@ -64,8 +64,11 @@ public class FileViewModel extends AndroidViewModel{
 
     private String token;
     private ConcurrentHashMap<String, List<FileBean>> fileListCache = new ConcurrentHashMap<>();
+
     private String path;
     private MutableLiveData<String> pathLiveDate = new MutableLiveData<>();
+
+    private MutableLiveData<String> externalLinkLiveDate = new MutableLiveData<>();
     private BottomNavigationView bottomNavigationView;
 
     private int limitCount;
@@ -82,6 +85,10 @@ public class FileViewModel extends AndroidViewModel{
     public void setPath(String path) {
         this.path = path;
         pathLiveDate.postValue(path);
+    }
+
+    public void setExternalLink(String externalLink) {
+        externalLinkLiveDate.postValue(externalLink);
     }
 
     public void getAllFile(String parentPath) {

@@ -218,8 +218,11 @@ public class FileActivity extends AppCompatActivity {
             fm.beginTransaction().hide(currentFragment).show(offLineListAndDownloadFragment).commit();
             currentFragment = offLineListAndDownloadFragment;
         }
+        if (offLineListAndDownloadFragment.viewPager2.getCurrentItem() != 0) {
+            offLineListAndDownloadFragment.viewPager2.setCurrentItem(0);
+        }
         binding.bottomNavigationView.setSelectedItemId(R.id.offLineListAndDownloadFragment);
-        offLineListAndDownloadFragment.setExternalLink(externalLink);
+        fileViewModel.setExternalLink(externalLink);
     }
 
     private String getIntentData(Intent intent) {
