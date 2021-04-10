@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,6 +61,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.io.unit.DataSizeUtil;
 import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.activity.PictureActivity;
 import github.zerorooot.sixpan.activity.VideoActivity;
@@ -607,7 +609,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         adapter.notifyDataSetChanged();
 
         int size = liveData.getValue().stream().filter(FileBean::isSelect).toArray().length;
-        actionMode.setTitle(size + " ");
+        setActionModeTitle();
         if (size == 0) {
             actionMode.finish();
         }
@@ -636,8 +638,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         binding.floatingCutActionButton.setVisibility(View.GONE);
         beSelectFileBean = null;
 
-        int size = liveData.getValue().stream().filter(FileBean::isSelect).toArray().length;
-        actionMode.setTitle(size + " ");
+        setActionModeTitle();
         return true;
     }
 
@@ -652,7 +653,23 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
+                MenuItem selectAllItem = menu.findItem(R.id.item_all);
+                selectAllItem.setVisible(false);
+                MenuItem selectReverseItem = menu.findItem(R.id.item_reverse);
+                selectReverseItem.setVisible(false);
+                String itemSelect = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("itemSelect", "0");
+                switch (itemSelect) {
+                    case "1":
+                        selectReverseItem.setVisible(true);
+                        break;
+                    case "2":
+                        selectAllItem.setVisible(true);
+                        break;
+                    default:
+                        selectAllItem.setVisible(true);
+                        selectReverseItem.setVisible(true);
+                }
+                return true;
             }
 
             @Override
@@ -741,8 +758,24 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         fileViewModel.setPosition(fileViewModel.getPath(), linearLayoutManager);
         liveData.postValue(value);
         adapter.notifyDataSetChanged();
-        int size = liveData.getValue().stream().filter(FileBean::isSelect).toArray().length;
-        actionMode.setTitle(size + " ");
+        setActionModeTitle();
+    }
+
+    private void setActionModeTitle() {
+        List<FileBean> selectFileBean = liveData.getValue().stream().filter(FileBean::isSelect).collect(Collectors.toList());
+        int number = selectFileBean.size();
+        String size = DataSizeUtil.format(selectFileBean.stream().mapToLong(FileBean::getSize).sum());
+        String itemSelectTitle = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("itemSelectTitle", "0");
+        switch (itemSelectTitle) {
+            case "1":
+                actionMode.setTitle(size);
+                break;
+            case "2":
+                actionMode.setTitle(number + "(" + size + ")");
+                break;
+            default:
+                actionMode.setTitle(number + "");
+        }
     }
 
     private void itemMove() {

@@ -21,6 +21,7 @@ import java.io.File;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.unit.DataSizeUtil;
+import github.zerorooot.sixpan.BuildConfig;
 import github.zerorooot.sixpan.R;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -61,6 +62,11 @@ public class SettingsActivity extends AppCompatActivity {
             edit.putBoolean("appCache", false);
             edit.apply();
         }
+        boolean recoverDefault = sharedPreferences.getBoolean("recoverDefault", false);
+        if (recoverDefault) {
+            String file = this.getCacheDir().getParent() + "/shared_prefs/" + BuildConfig.APPLICATION_ID + "_preferences.xml";
+            FileUtil.del(file);
+        }
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
@@ -77,6 +83,10 @@ public class SettingsActivity extends AppCompatActivity {
             setAppCachePreference(findPreference("appCache"));
 
             setThemePreference(findPreference("theme"));
+
+            setItemSelect(findPreference("itemSelect"));
+
+            setItemSelectTitle(findPreference("itemSelectTitle"));
 
         }
 
@@ -161,5 +171,22 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             });
         }
+
+        private void setItemSelect(@NonNull ListPreference itemSelectPreference) {
+            String[] entry = {"启用反选", "启用全选", "全部启用"};
+            String[] entryValue = {"1", "2", "0"};
+            itemSelectPreference.setEntries(entry);
+            itemSelectPreference.setEntryValues(entryValue);
+            itemSelectPreference.setSummaryProvider((Preference.SummaryProvider<ListPreference>) ListPreference::getEntry);
+        }
+
+        private void setItemSelectTitle(@NonNull ListPreference itemSelectTitlePreference) {
+            String[] entry = {"显示选中数量", "显示选中大小", "显示数量大小"};
+            String[] entryValue = {"0", "1", "2"};
+            itemSelectTitlePreference.setEntries(entry);
+            itemSelectTitlePreference.setEntryValues(entryValue);
+            itemSelectTitlePreference.setSummaryProvider((Preference.SummaryProvider<ListPreference>) ListPreference::getEntry);
+        }
+
     }
 }
