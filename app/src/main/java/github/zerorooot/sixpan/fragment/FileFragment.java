@@ -108,7 +108,12 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fileViewModel.getFile("/", 0, fileViewModel.getLimitCount());
+        //主题更改
+        if (Objects.isNull(fileViewModel.getPath())) {
+            fileViewModel.getFile("/", 0, fileViewModel.getLimitCount());
+            fileViewModel.setPath("/");
+        }
+
         binding.swipeRefreshLayout.setRefreshing(true);
         liveData = fileViewModel.getLiveData();
 
@@ -123,7 +128,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         binding.recycleView.setLayoutManager(linearLayoutManager);
 
         //用于排序时定位
-        fileViewModel.setPosition("/", linearLayoutManager);
+        fileViewModel.setPosition(fileViewModel.getPath(), linearLayoutManager);
 
         adapter.setOnItemClickListener(this::onClick);
         adapter.setOnItemLongClickListener(this::onLongClick);
@@ -172,6 +177,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
     /**
      * 输出当前位置
+     *
      * @param view view
      * @return true
      */

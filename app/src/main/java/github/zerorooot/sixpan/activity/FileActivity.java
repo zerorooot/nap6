@@ -39,6 +39,7 @@ public class FileActivity extends AppCompatActivity {
     private OffLineListAndDownloadFragment offLineListAndDownloadFragment;
     private AboutMeFragment aboutMeFragment;
     private final BroadcastReceiver singleDownloadBroadcastReceiver = new SingleDownloadBroadcastReceiver();
+    private FileViewModel fileViewModel;
 
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -58,7 +59,7 @@ public class FileActivity extends AppCompatActivity {
             externalLink = getIntentData(intent);
         }
 
-        FileViewModel fileViewModel = new ViewModelProvider(this, new SavedStateViewModelFactory(getApplication(), this)).get(FileViewModel.class);
+        fileViewModel = new ViewModelProvider(this, new SavedStateViewModelFactory(getApplication(), this)).get(FileViewModel.class);
         fileViewModel.setToken(token);
         fileViewModel.setBottomNavigationView(bottomNavigationView);
 
@@ -202,8 +203,8 @@ public class FileActivity extends AppCompatActivity {
         if (currentFragment != offLineListAndDownloadFragment) {
             fm.beginTransaction().hide(currentFragment).show(offLineListAndDownloadFragment).commit();
             currentFragment = offLineListAndDownloadFragment;
-            binding.bottomNavigationView.setSelectedItemId(R.id.offLineListAndDownloadFragment);
         }
+        binding.bottomNavigationView.setSelectedItemId(R.id.offLineListAndDownloadFragment);
         offLineListAndDownloadFragment.setExternalLink(externalLink);
     }
 

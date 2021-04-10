@@ -64,7 +64,7 @@ public class FileViewModel extends AndroidViewModel{
 
     private String token;
     private ConcurrentHashMap<String, List<FileBean>> fileListCache = new ConcurrentHashMap<>();
-    private String path = "/";
+    private String path;
     private MutableLiveData<String> pathLiveDate = new MutableLiveData<>();
     private BottomNavigationView bottomNavigationView;
 
@@ -112,6 +112,7 @@ public class FileViewModel extends AndroidViewModel{
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 errorLog("error-getFile", e);
                 new Handler(Looper.getMainLooper()).post(() -> {
+                    liveData.postValue(null);
                     Toast.makeText(getApplication(), "网路连接失败，请重试!!!", Toast.LENGTH_SHORT).show();
                 });
             }
@@ -170,6 +171,7 @@ public class FileViewModel extends AndroidViewModel{
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 errorLog("error-getFile", e);
                 new Handler(Looper.getMainLooper()).post(() -> {
+                    liveData.postValue(null);
                     Toast.makeText(getApplication(), "网路连接失败，请重试!!!", Toast.LENGTH_SHORT).show();
                 });
             }
@@ -222,6 +224,7 @@ public class FileViewModel extends AndroidViewModel{
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 errorLog("error-getFile", e);
                 new Handler(Looper.getMainLooper()).post(() -> {
+                    liveData.postValue(null);
                     Toast.makeText(getApplication(), "网路连接失败，请重试!!!", Toast.LENGTH_SHORT).show();
                 });
             }

@@ -1,6 +1,5 @@
 package github.zerorooot.sixpan.adapter;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.bean.OffLineBean;
@@ -70,7 +68,7 @@ public class OffLineFileAdapter extends ListAdapter<OffLineBean, OffLineFileAdap
         holder.offlineFileTimeTextView.setText(offLineBean.getTime());
 
         setImage(offLineBean, holder);
-        holder.offlineCardView.setCardBackgroundColor(offLineBean.isSelect() ? Color.CYAN : Color.WHITE);
+//        holder.offlineCardView.setCardBackgroundColor(offLineBean.isSelect() ? Color.CYAN : Color.WHITE);
 
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(v, holder.getAdapterPosition()));
         holder.offlineImageButton.setOnClickListener(v -> {

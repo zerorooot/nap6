@@ -1,6 +1,7 @@
 package github.zerorooot.sixpan.adapter;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Objects;
 
 import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.bean.FileBean;
@@ -28,7 +30,7 @@ public class FileAdapter extends ListAdapter<FileBean, FileAdapter.MyViewHolder>
     private FragmentManager supportFragmentManager;
     private OnItemClickListener onItemClickListener = null;
     private OnItemLongClickListener onItemLongClickListener = null;
-
+    private int defaultColor;
 
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
@@ -79,7 +81,10 @@ public class FileAdapter extends ListAdapter<FileBean, FileAdapter.MyViewHolder>
 
         setImage(currentFileBean, holder);
 
-        holder.cardView.setCardBackgroundColor(currentFileBean.isSelect() ? Color.CYAN : Color.WHITE);
+        if (Objects.isNull(defaultColor)) {
+            defaultColor = ((ColorDrawable) holder.layout.getBackground()).getColor();
+        }
+        holder.layout.setBackgroundColor(currentFileBean.isSelect() ? Color.CYAN : defaultColor);
 
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(v, holder.getAdapterPosition()));
         holder.itemView.setOnLongClickListener(v -> onItemLongClickListener.onItemLongClick(v, holder.getAdapterPosition()));
@@ -115,7 +120,7 @@ public class FileAdapter extends ListAdapter<FileBean, FileAdapter.MyViewHolder>
         private final TextView fileSizeTextView;
         private final TextView fileTimeTextView;
         private final ImageButton moreButton;
-        private final CardView cardView;
+        private final ConstraintLayout layout;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -126,7 +131,7 @@ public class FileAdapter extends ListAdapter<FileBean, FileAdapter.MyViewHolder>
             fileSizeTextView = itemView.findViewById(R.id.fileSizeTextView);
             fileTimeTextView = itemView.findViewById(R.id.fileTimeTextView);
             moreButton = itemView.findViewById(R.id.fileImageButton);
-            cardView = itemView.findViewById(R.id.cardView);
+            layout = itemView.findViewById(R.id.layout);
 
         }
     }

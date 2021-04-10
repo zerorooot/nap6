@@ -9,6 +9,10 @@
             app:key="offLinePath"
             app:title="默认离线位置" />
 
+        <ListPreference
+            app:key="theme"
+            app:title="主题模式" />
+
         <SwitchPreferenceCompat
             app:key="appCache"
             app:summaryOn="清除完毕"

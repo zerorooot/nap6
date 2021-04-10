@@ -9,7 +9,9 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -74,6 +76,8 @@ public class SettingsActivity extends AppCompatActivity {
 
             setAppCachePreference(findPreference("appCache"));
 
+            setThemePreference(findPreference("theme"));
+
         }
 
 
@@ -114,7 +118,7 @@ public class SettingsActivity extends AppCompatActivity {
             appCachePreference.setOnPreferenceChangeListener((preference, newValue) -> {
                 SwitchPreferenceCompat switchPreferenceCompat = (SwitchPreferenceCompat) preference;
                 boolean off = (boolean) newValue;
-                if (off) {
+                if (!off) {
                     switchPreferenceCompat.setSummaryOff(String.format(reminder, size));
                 } else {
                     FileUtil.del(file);
@@ -129,13 +133,33 @@ public class SettingsActivity extends AppCompatActivity {
             offLinePathPreference.setSummaryProvider((Preference.SummaryProvider<EditTextPreference>) preference -> {
                 String text = preference.getText();
                 if (TextUtils.isEmpty(text)) {
-                    return "默认离线位置，长按文件页面的目录可复制";
+                    return "长按文件页面目录可复制当前路径";
                 }
                 return "默认离线位置为: " + text;
             });
 
         }
 
-
+        private void setThemePreference(@NonNull ListPreference themePreference) {
+            String[] entry = {"普通模式", "暗黑模式", "跟随系统"};
+            String[] entryValue = {"1", "2", "-1"};
+            themePreference.setEntries(entry);
+            themePreference.setEntryValues(entryValue);
+            themePreference.setSummaryProvider((Preference.SummaryProvider<ListPreference>) ListPreference::getEntry);
+            themePreference.setOnPreferenceChangeListener((preference, newValue) -> {
+                String mode = newValue.toString();
+                switch (mode) {
+                    case "2":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                        break;
+                    case "-1":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                        break;
+                    default:
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                }
+                return true;
+            });
+        }
     }
 }

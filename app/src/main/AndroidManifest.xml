@@ -13,8 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.6pan"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name=".activity.SettingsActivity"/>
+        <activity android:name=".activity.SettingsActivity" />
         <activity
             android:name=".activity.PictureActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
@@ -26,7 +25,6 @@
             android:launchMode="singleTask"
             android:noHistory="true"
             android:supportsPictureInPicture="true"
-            android:taskAffinity=".activity.VideoActivityTask"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
             android:name=".activity.FileActivity"
