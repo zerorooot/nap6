@@ -17,14 +17,19 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -41,7 +46,6 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
     private final MutableLiveData<List<OffLineParse>> offLineParseLiveData = new MutableLiveData<>();
     private OffLineDownloadAdapter adapter;
     private String offLinePath = "/";
-
 
 
     @Override
@@ -88,6 +92,49 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
         });
 
         adapter.setOffLineSwipe(binding.offLineSwipe);
+
+        swipeDelete();
+    }
+
+    private void swipeDelete() {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int adapterPosition = viewHolder.getAdapterPosition();
+                if (adapterPosition == 0) {
+                    adapter.notifyItemChanged(0);
+                    return;
+                }
+                OffLineParse offLineParse = offLineParseLiveData.getValue().get(adapterPosition - 1);
+                Snackbar make = Snackbar.make(requireView(), "是否删除 " + offLineParse.getName() + " ?", BaseTransientBottomBar.LENGTH_SHORT);
+                make.setAction("是", view -> {
+                    ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(adapter.getLinks().split("\n")));
+                    StringJoiner stringJoiner = new StringJoiner("\n");
+                    arrayList.forEach(s -> {
+                        if (!s.contains(offLineParse.getTextLink())) {
+                            stringJoiner.add(s);
+                        }
+                    });
+                    adapter.setExternalLink(stringJoiner.toString());
+                    binding.recyclerView.setAdapter(adapter);
+                    offLineParseLiveData.getValue().remove(adapterPosition - 1);
+                });
+                //恢复
+                make.addCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                    }
+                });
+                make.setAnchorView(fileViewModel.getBottomNavigationView());
+                make.show();
+            }
+        }).attachToRecyclerView(binding.recyclerView);
     }
 
     private void setDefaultOffLinePath() {

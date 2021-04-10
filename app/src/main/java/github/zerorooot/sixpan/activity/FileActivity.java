@@ -20,6 +20,7 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -209,7 +210,14 @@ public class FileActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         String intentData = getIntentData(intent);
         if (intentData != null) {
-            setExtraMessage(intentData);
+            String[] split = intentData.split("\n");
+            StringJoiner stringJoiner = new StringJoiner("\n");
+            for (String s : split) {
+                if (!"".equals(s)) {
+                    stringJoiner.add(s);
+                }
+            }
+            setExtraMessage(stringJoiner.toString());
         }
     }
 
