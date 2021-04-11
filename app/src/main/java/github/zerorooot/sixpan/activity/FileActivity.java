@@ -210,23 +210,25 @@ public class FileActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         String intentData = getIntentData(intent);
         if (intentData != null) {
-            String[] split = intentData.split("\n");
-            StringJoiner stringJoiner = new StringJoiner("\n");
-            for (String s : split) {
-                if (!"".equals(s)) {
-                    stringJoiner.add(s);
-                }
-            }
-            setExtraMessage(stringJoiner.toString());
+            setExtraMessage(intentData);
         }
     }
 
     private void setExtraMessage(String externalLink) {
+        String[] split = externalLink.split("\n");
+        StringJoiner stringJoiner = new StringJoiner("\n");
+        for (String s : split) {
+            if (!"".equals(s)) {
+                stringJoiner.add(s);
+            }
+        }
+        externalLink = stringJoiner.toString();
+
         if (currentFragment != offLineListAndDownloadFragment) {
             fm.beginTransaction().hide(currentFragment).show(offLineListAndDownloadFragment).commit();
             currentFragment = offLineListAndDownloadFragment;
         }
-        if (offLineListAndDownloadFragment.viewPager2.getCurrentItem() != 0) {
+        if (Objects.nonNull(offLineListAndDownloadFragment.viewPager2) && offLineListAndDownloadFragment.viewPager2.getCurrentItem() != 0) {
             offLineListAndDownloadFragment.viewPager2.setCurrentItem(0);
         }
         binding.bottomNavigationView.setSelectedItemId(R.id.offLineListAndDownloadFragment);

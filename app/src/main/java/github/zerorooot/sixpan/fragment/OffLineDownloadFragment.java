@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -65,11 +66,14 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
 
         fileViewModel.getExternalLinkLiveDate().observe(getViewLifecycleOwner(), externalLink -> {
             String links = adapter.getLinks();
-            StringJoiner stringJoiner = new StringJoiner("\n");
             if (Objects.nonNull(links) && !"".equals(links)) {
-                stringJoiner.add(links);
+                links = links + "\n" + externalLink;
+            }else {
+                links = externalLink;
             }
-            stringJoiner.add(externalLink);
+            Set<String> collect = Arrays.stream(links.split("\n")).collect(Collectors.toSet());
+            StringJoiner stringJoiner = new StringJoiner("\n");
+            collect.forEach(stringJoiner::add);
             adapter.setExternalLink(stringJoiner.toString());
             binding.recyclerView.setAdapter(adapter);
             parseClick(stringJoiner.toString(), null);

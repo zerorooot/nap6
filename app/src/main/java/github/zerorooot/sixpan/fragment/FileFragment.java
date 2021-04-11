@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -301,6 +302,12 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         TextInputEditText editInputLayout = inflate.findViewById(R.id.dialog_editText);
         editInputLayout.setFocusable(true);
         editInputLayout.requestFocus();
+        editInputLayout.post(() -> {
+            InputMethodManager manager = ((InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE));
+            if (manager != null) {
+                manager.showSoftInput(editInputLayout, 0);
+            }
+        });
         MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(c);
         materialAlertDialogBuilder.setTitle("新建文件夹")
                 .setView(inflate)
@@ -331,7 +338,23 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         if (!"".equals(textName)) {
             textNameInputEditText.setText(textName);
             textContentInputEditText.requestFocus();
+            textContentInputEditText.post(() -> {
+                InputMethodManager manager = ((InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE));
+                if (manager != null) {
+                    manager.showSoftInput(textContentInputEditText, 0);
+                }
+            });
+        } else {
+            textNameInputEditText.post(() -> {
+                textNameInputEditText.requestFocus();
+                InputMethodManager manager = ((InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE));
+                if (manager != null) {
+                    manager.showSoftInput(textNameInputEditText, 0);
+                }
+            });
+
         }
+
         MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(c);
         materialAlertDialogBuilder.setTitle("新建文本")
                 .setView(inflate)
@@ -1104,6 +1127,13 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     public void rename(Context c, FileBean fileBean) {
         TextInputEditText textInputEditText = new TextInputEditText(c);
         textInputEditText.setText(fileBean.getName());
+        textInputEditText.post(() -> {
+            textInputEditText.requestFocus();
+            InputMethodManager manager = ((InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE));
+            if (manager != null) {
+                manager.showSoftInput(textInputEditText, 0);
+            }
+        });
         MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(requireContext());
         materialAlertDialogBuilder.setTitle("重命名文件")
                 .setView(textInputEditText)
