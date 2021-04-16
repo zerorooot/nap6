@@ -19,7 +19,6 @@ import androidx.constraintlayout.widget.Guideline;
 
 import com.shuyu.gsyvideoplayer.utils.CommonUtil;
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
-import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 
 import java.util.Date;
@@ -44,7 +43,7 @@ public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
     private TextView timeTextView;
     private Guideline guidelinePortrait;
     private Guideline guidelineLandscape;
-    private OrientationUtils orientationUtils;
+    private MyOrientationUtils orientationUtils;
 
     private Timer timer;
 
@@ -237,7 +236,7 @@ public class MyGSYVideoPlayer extends StandardGSYVideoPlayer {
         }
     }
 
-    public void setOrientationUtils(OrientationUtils orientationUtils) {
+    public void setOrientationUtils(MyOrientationUtils orientationUtils) {
         this.orientationUtils = orientationUtils;
     }
 

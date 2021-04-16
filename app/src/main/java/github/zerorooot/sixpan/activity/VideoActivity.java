@@ -1,6 +1,7 @@
 package github.zerorooot.sixpan.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
@@ -8,12 +9,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
 import com.shuyu.gsyvideoplayer.model.VideoOptionModel;
 import com.shuyu.gsyvideoplayer.player.IjkPlayerManager;
-import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
 
 import org.cybergarage.upnp.Device;
 
@@ -24,6 +25,7 @@ import java.util.Objects;
 import github.zerorooot.sixpan.R;
 import github.zerorooot.sixpan.adapter.VideoAllCallBackAdapter;
 import github.zerorooot.sixpan.customizeActivity.MyGSYVideoPlayer;
+import github.zerorooot.sixpan.customizeActivity.MyOrientationUtils;
 import github.zerorooot.sixpan.dlan.DLNADeviceManager;
 import github.zerorooot.sixpan.dlan.IController;
 import github.zerorooot.sixpan.dlan.MultiPointController;
@@ -32,7 +34,7 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 public class VideoActivity extends AppCompatActivity {
     MyGSYVideoPlayer videoPlayer;
-    OrientationUtils orientationUtils;
+    MyOrientationUtils orientationUtils;
     boolean pip;
     private String address;
 
@@ -55,8 +57,13 @@ public class VideoActivity extends AppCompatActivity {
         list.add(videoOptionModel);
         GSYVideoManager.instance().setOptionModelList(list);
 
+//        设置是否自动横屏
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean autoLandscapeRotationVideo = sharedPreferences.getBoolean("autoLandscapeRotationVideo", false);
+
         //设置旋转
-        orientationUtils = new OrientationUtils(this, videoPlayer);
+        orientationUtils = new MyOrientationUtils(this, videoPlayer, autoLandscapeRotationVideo);
         videoPlayer.setUp(address, false, title);
 
         //增加title
@@ -68,9 +75,9 @@ public class VideoActivity extends AppCompatActivity {
         videoPlayer.setOrientationUtils(orientationUtils);
 
         //设置默认横屏
-        orientationUtils.resolveByClick();
+        orientationUtils.resolveByClick(false);
         videoPlayer.getFullscreenButton().setOnClickListener(v -> {
-            orientationUtils.resolveByClick();
+            orientationUtils.resolveByClick(true);
         });
 
 
@@ -86,7 +93,7 @@ public class VideoActivity extends AppCompatActivity {
                 int videoWidth = videoPlayer.getCurrentVideoWidth();
                 //设置竖屏
                 if (videoWidth < videoHeight) {
-                    orientationUtils.resolveByClick();
+                    orientationUtils.resolveByClick(false);
                 }
             }
 

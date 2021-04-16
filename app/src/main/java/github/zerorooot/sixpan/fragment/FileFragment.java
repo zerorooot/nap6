@@ -508,7 +508,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
             if (fileBean.isDirectory()) {
                 gotoNext(fileBean);
             } else {
-                playOrRead(fileBean);
+                playOrRead(fileBean, position);
             }
         } else {
             select(fileBean, position);
@@ -563,7 +563,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setTitle("6pan");
     }
 
-    private void playOrRead(FileBean fileBean) {
+    private void playOrRead(FileBean fileBean, int position) {
         if (fileBean.getMime().contains("video")) {
             playVideo(fileBean);
             return;
@@ -578,7 +578,12 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
             forceReadText(fileBean, textDialog);
             return;
         }
-        Toast.makeText(requireContext(), fileBean.toString(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(requireContext(), fileBean.toString(), Toast.LENGTH_SHORT).show();
+        BottomDialog bottomDialog = new BottomDialog(fileViewModel);
+        bottomDialog.setBottomDialogInterface(this);
+        bottomDialog.setPosition(position);
+        bottomDialog.setCurrentFileBean(fileBean);
+        bottomDialog.show(getChildFragmentManager());
     }
 
     private void playVideo(FileBean fileBean) {

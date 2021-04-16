@@ -3,7 +3,6 @@ package github.zerorooot.sixpan.activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -88,19 +87,14 @@ public class SettingsActivity extends AppCompatActivity {
 
             setItemSelectTitle(findPreference("itemSelectTitle"));
 
+
         }
 
 
         private void setLimitCountPreference(@NonNull EditTextPreference limitCountPreference) {
             limitCountPreference.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER));
 
-            limitCountPreference.setSummaryProvider((Preference.SummaryProvider<EditTextPreference>) preference -> {
-                String text = preference.getText();
-                if (TextUtils.isEmpty(text)) {
-                    text = "20";
-                }
-                return "每次请求" + text + "个文件";
-            });
+            limitCountPreference.setSummaryProvider((Preference.SummaryProvider<EditTextPreference>) preference -> "每次请求" + preference.getText() + "个文件");
 
         }
 
@@ -109,9 +103,6 @@ public class SettingsActivity extends AppCompatActivity {
 
             searchNumberPreference.setSummaryProvider((Preference.SummaryProvider<EditTextPreference>) preference -> {
                 String text = preference.getText();
-                if (TextUtils.isEmpty(text)) {
-                    return "-1表示搜索时不限文件数量";
-                }
                 if ("-1".equals(text)) {
                     return "搜索时不限文件数量";
                 }
@@ -142,7 +133,7 @@ public class SettingsActivity extends AppCompatActivity {
         private void setOffLinePath(@NonNull EditTextPreference offLinePathPreference) {
             offLinePathPreference.setSummaryProvider((Preference.SummaryProvider<EditTextPreference>) preference -> {
                 String text = preference.getText();
-                if (TextUtils.isEmpty(text)) {
+                if ("/".equals(text)) {
                     return "长按文件页面目录可复制当前路径";
                 }
                 return "默认离线位置为: " + text;
