@@ -23,6 +23,7 @@ public class FileBean implements Serializable, Parcelable {
     private long atime;
     private String dateTime;
     private String mime;
+    private int children;
 
     private String parentPath;
     private String sizeString;
@@ -39,6 +40,7 @@ public class FileBean implements Serializable, Parcelable {
         atime = in.readLong();
         dateTime = in.readString();
         mime = in.readString();
+        children = in.readInt();
         parentPath = in.readString();
         sizeString = in.readString();
         select = in.readByte() != 0;
@@ -73,6 +75,7 @@ public class FileBean implements Serializable, Parcelable {
         dest.writeLong(atime);
         dest.writeString(dateTime);
         dest.writeString(mime);
+        dest.writeInt(children);
         dest.writeString(parentPath);
         dest.writeString(sizeString);
         dest.writeByte((byte) (select ? 1 : 0));

@@ -53,7 +53,7 @@ dependencies {
 
     implementation group: 'cn.hutool', name: 'hutool-core', version: '5.6.1'
 
-    implementation 'com.shuyu:gsyVideoPlayer-java:8.1.0'
+    implementation 'com.shuyu:gsyVideoPlayer-java:8.1.2'
 
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.0'
     implementation 'com.google.code.gson:gson:2.8.6'

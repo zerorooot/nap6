@@ -78,7 +78,12 @@ public class FileAdapter extends ListAdapter<FileBean, FileAdapter.MyViewHolder>
         holder.fileNameTextView.setText(currentFileBean.getName());
         holder.fileTimeTextView.setText(currentFileBean.getDateTime());
         holder.fileSizeTextView.setText(currentFileBean.getSizeString());
-
+        if (currentFileBean.isDirectory()) {
+            holder.childFileTextView.setVisibility(View.VISIBLE);
+            holder.childFileTextView.setText(String.valueOf(currentFileBean.getChildren()));
+        } else {
+            holder.childFileTextView.setVisibility(View.GONE);
+        }
         setImage(currentFileBean, holder);
 
         if (Objects.isNull(defaultColor)) {
@@ -121,6 +126,7 @@ public class FileAdapter extends ListAdapter<FileBean, FileAdapter.MyViewHolder>
         private final TextView fileTimeTextView;
         private final ImageButton moreButton;
         private final ConstraintLayout layout;
+        private final TextView childFileTextView;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -132,7 +138,7 @@ public class FileAdapter extends ListAdapter<FileBean, FileAdapter.MyViewHolder>
             fileTimeTextView = itemView.findViewById(R.id.fileTimeTextView);
             moreButton = itemView.findViewById(R.id.fileImageButton);
             layout = itemView.findViewById(R.id.layout);
-
+            childFileTextView = itemView.findViewById(R.id.childFileTextView);
         }
     }
 }
