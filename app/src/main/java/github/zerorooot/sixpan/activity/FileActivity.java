@@ -174,7 +174,7 @@ public class FileActivity extends AppCompatActivity {
             int selectedItemId = binding.bottomNavigationView.getSelectedItemId();
             if (selectedItemId != R.id.fileFragment) {
                 runOnUiThread(() -> {
-                    fileFragment.showBottomNavigationView();
+                    fileViewModel.showBottomNavigationView();
                 });
                 binding.bottomNavigationView.setSelectedItemId(R.id.fileFragment);
             } else {
@@ -189,7 +189,7 @@ public class FileActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (binding.bottomNavigationView.getSelectedItemId() != R.id.fileFragment) {
-            fileFragment.showBottomNavigationView();
+            fileViewModel.showBottomNavigationView();
             binding.bottomNavigationView.setSelectedItemId(R.id.fileFragment);
         } else {
             fileFragment.onBackPressed(fileFragment.backPressedCallback);

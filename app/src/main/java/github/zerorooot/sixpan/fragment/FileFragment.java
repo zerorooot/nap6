@@ -520,7 +520,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     private void gotoNext(FileBean fileBean) {
         binding.swipeRefreshLayout.setRefreshing(true);
         clearMenuItemIcon();
-        showBottomNavigationView();
+        fileViewModel.showBottomNavigationView();
         if (search) {
             removeSearch();
         }
@@ -547,13 +547,6 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
         fileViewModel.getFile(fileBean.getPath(), 0, fileViewModel.getLimitCount());
     }
 
-    @SuppressWarnings("all")
-    public void showBottomNavigationView() {
-        BottomNavigationView bottomNavigationView = fileViewModel.getBottomNavigationView();
-        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) bottomNavigationView.getLayoutParams();
-        HideBottomViewOnScrollBehavior<BottomNavigationView> behavior = (HideBottomViewOnScrollBehavior<BottomNavigationView>) layoutParams.getBehavior();
-        behavior.slideUp(bottomNavigationView);
-    }
 
     /**
      * 当退出搜索后，需要清除它
@@ -999,9 +992,14 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
 
     public void onBackPressed(OnBackPressedCallback callback) {
         clearMenuItemIcon();
-        showBottomNavigationView();
+        fileViewModel.showBottomNavigationView();
         if (!searchView.isIconified()) {
             searchView.onActionViewCollapsed();
+            return;
+        }
+
+        if (binding.swipeRefreshLayout.isRefreshing()) {
+            binding.swipeRefreshLayout.setRefreshing(false);
             return;
         }
 

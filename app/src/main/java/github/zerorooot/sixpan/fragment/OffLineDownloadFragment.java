@@ -68,7 +68,7 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
             String links = adapter.getLinks();
             if (Objects.nonNull(links) && !"".equals(links)) {
                 links = links + "\n" + externalLink;
-            }else {
+            } else {
                 links = externalLink;
             }
             Set<String> collect = Arrays.stream(links.split("\n")).collect(Collectors.toSet());
@@ -118,13 +118,12 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
                 Snackbar make = Snackbar.make(requireView(), "是否删除 " + offLineParse.getName() + " ?", BaseTransientBottomBar.LENGTH_SHORT);
                 make.setAction("是", view -> {
                     ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(adapter.getLinks().split("\n")));
+                    //remove
+                    arrayList.remove(adapterPosition - 1);
                     StringJoiner stringJoiner = new StringJoiner("\n");
-                    arrayList.forEach(s -> {
-                        if (!s.contains(offLineParse.getTextLink())) {
-                            stringJoiner.add(s);
-                        }
-                    });
+                    arrayList.forEach(stringJoiner::add);
                     adapter.setExternalLink(stringJoiner.toString());
+
                     binding.recyclerView.setAdapter(adapter);
                     offLineParseLiveData.getValue().remove(adapterPosition - 1);
                 });
@@ -253,6 +252,7 @@ public class OffLineDownloadFragment extends Fragment implements OffLineDownload
                 Toast.makeText(requireContext(), "离线下载失败~", Toast.LENGTH_SHORT).show();
             }
         });
+        fileViewModel.showBottomNavigationView();
     }
 
     @Override

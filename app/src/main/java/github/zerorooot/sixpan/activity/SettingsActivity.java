@@ -1,9 +1,15 @@
 package github.zerorooot.sixpan.activity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -14,9 +20,13 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-import androidx.preference.SwitchPreferenceCompat;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import java.io.File;
+import java.util.Map;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.unit.DataSizeUtil;
@@ -42,31 +52,6 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean glideCache = sharedPreferences.getBoolean("appCache", false);
-        if (glideCache) {
-            SharedPreferences.Editor edit = sharedPreferences.edit();
-            edit.putBoolean("appCache", false);
-            edit.apply();
-        }
-        boolean recoverDefault = sharedPreferences.getBoolean("recoverDefault", false);
-        if (recoverDefault) {
-            String file = this.getCacheDir().getParent() + "/shared_prefs/" + BuildConfig.APPLICATION_ID + "_preferences.xml";
-            FileUtil.del(file);
-        }
-    }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
@@ -81,12 +66,19 @@ public class SettingsActivity extends AppCompatActivity {
 
             setAppCachePreference(findPreference("appCache"));
 
+            setRecoverDefault(findPreference("recoverDefault"));
+
+            setReboot(findPreference("reboot"));
+
             setThemePreference(findPreference("theme"));
 
             setItemSelect(findPreference("itemSelect"));
 
             setItemSelectTitle(findPreference("itemSelectTitle"));
 
+            setBackUp(findPreference("backUp"));
+
+            setRecover(findPreference("recover"));
 
         }
 
@@ -110,22 +102,46 @@ public class SettingsActivity extends AppCompatActivity {
             });
         }
 
-        private void setAppCachePreference(@NonNull SwitchPreferenceCompat appCachePreference) {
+        private void setAppCachePreference(@NonNull Preference appCachePreference) {
             String reminder = "缓存已占用%s";
             File file = new File(requireContext().getCacheDir() + "/");
             String size = DataSizeUtil.format(FileUtil.size(file));
-            appCachePreference.setSummaryOff(String.format(reminder, size));
+            appCachePreference.setSummary(String.format(reminder, size));
 
-            appCachePreference.setOnPreferenceChangeListener((preference, newValue) -> {
-                SwitchPreferenceCompat switchPreferenceCompat = (SwitchPreferenceCompat) preference;
-                boolean off = (boolean) newValue;
-                if (!off) {
-                    switchPreferenceCompat.setSummaryOff(String.format(reminder, size));
-                } else {
-                    FileUtil.del(file);
-                    file.mkdirs();
-                    switchPreferenceCompat.setSummaryOn("清除完毕");
+            appCachePreference.setOnPreferenceClickListener(preference -> {
+                FileUtil.del(file);
+                file.mkdirs();
+                appCachePreference.setSummary("清除完毕");
+                return true;
+            });
+        }
+
+        private void setRecoverDefault(@NonNull Preference recoverDefaultPreference) {
+            recoverDefaultPreference.setOnPreferenceClickListener(preference -> {
+                String file = requireContext().getCacheDir().getParent() + "/shared_prefs/" + BuildConfig.APPLICATION_ID + "_preferences.xml";
+                String toast = "恢复默认设置失败";
+                if (FileUtil.del(file)) {
+                    toast = "恢复默认设置成功";
                 }
+                Toast.makeText(requireContext(), toast, Toast.LENGTH_SHORT).show();
+                return true;
+            });
+        }
+
+        private void setReboot(@NonNull Preference rebootPreference) {
+            rebootPreference.setOnPreferenceClickListener(preference -> {
+//                Intent mainIntent = IntentCompat.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_LAUNCHER);
+//                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                requireContext().getApplicationContext().startActivity(mainIntent);
+//                System.exit(0);
+
+
+                PackageManager packageManager = requireContext().getPackageManager();
+                Intent intent = packageManager.getLaunchIntentForPackage(requireContext().getPackageName());
+                ComponentName componentName = intent.getComponent();
+                Intent mainIntent = Intent.makeRestartActivityTask(componentName);
+                startActivity(mainIntent);
+                Runtime.getRuntime().exit(0);
                 return true;
             });
         }
@@ -177,6 +193,46 @@ public class SettingsActivity extends AppCompatActivity {
             itemSelectTitlePreference.setEntries(entry);
             itemSelectTitlePreference.setEntryValues(entryValue);
             itemSelectTitlePreference.setSummaryProvider((Preference.SummaryProvider<ListPreference>) ListPreference::getEntry);
+        }
+
+        private void setBackUp(@NonNull Preference backUpPreference) {
+            backUpPreference.setOnPreferenceClickListener(preference -> {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+                Map<String, ?> all = sharedPreferences.getAll();
+                String json = new Gson().toJson(all);
+                ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("backUp", json);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(requireContext(), "配置信息已输出到剪贴板", Toast.LENGTH_SHORT).show();
+                return true;
+            });
+        }
+
+        private void setRecover(@NonNull EditTextPreference recoverPreference) {
+            recoverPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+                JsonObject jsonObject = new Gson().fromJson(newValue.toString(), JsonObject.class);
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+                SharedPreferences.Editor edit = sharedPreferences.edit();
+                Map<String, ?> all = sharedPreferences.getAll();
+                all.forEach((k, v) -> {
+                    JsonPrimitive jsonPrimitive = jsonObject.getAsJsonPrimitive(k);
+                    if (jsonPrimitive.isJsonNull()) {
+                        return;
+                    }
+                    if (jsonPrimitive.isBoolean()) {
+                        edit.putBoolean(k, jsonPrimitive.getAsBoolean());
+                    }
+                    if (jsonPrimitive.isNumber()) {
+                        edit.putInt(k, jsonPrimitive.getAsInt());
+                    }
+                    if (jsonPrimitive.isString()) {
+                        edit.putString(k, jsonPrimitive.getAsString());
+                    }
+                });
+                edit.apply();
+                Toast.makeText(requireContext(), "恢复成功,请重启后生效", Toast.LENGTH_SHORT).show();
+                return true;
+            });
         }
 
     }

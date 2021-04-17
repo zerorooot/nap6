@@ -13,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.6pan"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.SettingsActivity" />
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:parentActivityName=".activity.FileActivity" />
         <activity
             android:name=".activity.PictureActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
