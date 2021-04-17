@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
@@ -38,8 +38,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.behavior.HideBottomViewOnScrollBehavior;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -403,7 +402,7 @@ public class FileFragment extends Fragment implements BottomDialog.BottomDialogI
     private boolean search(String query) {
         search = true;
         binding.swipeRefreshLayout.setRefreshing(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("搜索");
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("搜索-" + query);
         String path = binding.filePath.getText().toString();
         fileViewModel.search(path, query).observe(getViewLifecycleOwner(), fileBean -> {
             liveData.postValue(fileBean);
