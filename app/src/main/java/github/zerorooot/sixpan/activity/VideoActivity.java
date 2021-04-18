@@ -1,8 +1,10 @@
 package github.zerorooot.sixpan.activity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -60,7 +62,20 @@ public class VideoActivity extends AppCompatActivity {
 //        设置是否自动横屏
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        boolean autoLandscapeRotationVideo = sharedPreferences.getBoolean("autoLandscapeRotationVideo", false);
+        String autoLandscapeRotationVideoString = sharedPreferences.getString("autoLandscapeRotationVideo", "0");
+        boolean autoLandscapeRotationVideo = false;
+        switch (autoLandscapeRotationVideoString) {
+            case "1":
+                autoLandscapeRotationVideo = true;
+                break;
+            case "2":
+                //电池
+                Intent batteryStatus = getBaseContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+                //isCharging
+                int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                autoLandscapeRotationVideo= status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
+                break;
+        }
 
         //设置旋转
         orientationUtils = new MyOrientationUtils(this, videoPlayer, autoLandscapeRotationVideo);

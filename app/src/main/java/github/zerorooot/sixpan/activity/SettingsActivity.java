@@ -80,6 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             setRecover(findPreference("recover"));
 
+            setAutoLandscapeRotationVideo(findPreference("autoLandscapeRotationVideo"));
         }
 
 
@@ -130,12 +131,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         private void setReboot(@NonNull Preference rebootPreference) {
             rebootPreference.setOnPreferenceClickListener(preference -> {
-//                Intent mainIntent = IntentCompat.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_LAUNCHER);
-//                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                requireContext().getApplicationContext().startActivity(mainIntent);
-//                System.exit(0);
-
-
                 PackageManager packageManager = requireContext().getPackageManager();
                 Intent intent = packageManager.getLaunchIntentForPackage(requireContext().getPackageName());
                 ComponentName componentName = intent.getComponent();
@@ -235,5 +230,12 @@ public class SettingsActivity extends AppCompatActivity {
             });
         }
 
+        private void setAutoLandscapeRotationVideo(@NonNull ListPreference autoLandscapeRotationVideoPreference) {
+            String[] entry = {"禁止自动左右横屏切换", "允许自动左右横屏切换", "允许充电时左右横屏切换"};
+            String[] entryValue = {"0", "1", "2"};
+            autoLandscapeRotationVideoPreference.setEntries(entry);
+            autoLandscapeRotationVideoPreference.setEntryValues(entryValue);
+            autoLandscapeRotationVideoPreference.setSummaryProvider((Preference.SummaryProvider<ListPreference>) ListPreference::getEntry);
+        }
     }
 }

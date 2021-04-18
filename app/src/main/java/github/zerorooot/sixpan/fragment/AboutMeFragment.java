@@ -114,7 +114,7 @@ public class AboutMeFragment extends Fragment {
         });
         binding.versionTextView.setOnClickListener(e -> {
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("https://github.com/zerorooot/nap6/releases/"));
+            intent.setData(Uri.parse(ApiUrl.UPDATA));
             startActivity(intent);
         });
     }

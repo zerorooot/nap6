@@ -26,12 +26,10 @@
             app:key="theme"
             app:title="主题模式" />
 
-        <SwitchPreferenceCompat
-            app:defaultValue="false"
+        <ListPreference
+            app:defaultValue="0"
             app:key="autoLandscapeRotationVideo"
-            app:summaryOff="禁止在不开启自动旋转的情况下,播放视频时自动横屏与反向横屏"
-            app:summaryOn="允许在不开启自动旋转的情况下,播放视频时自动横屏与反向横屏"
-            app:title="自动横屏与反向横屏" />
+            app:title="视频左右横屏切换" />
 
         <Preference
             app:key="appCache"

@@ -21,4 +21,5 @@ public class ApiUrl {
     public static final String GITHUB_CHECK_UPDATE = "https://api.github.com/repos/zerorooot/nap6/releases?per_page=1";
     public static final String LOGOUT = "https://api.2dland.cn/v3/user/logout";
     public static final String UPLOAD_TOKEN = "https://api.2dland.cn/v3/file/uploadToken";
+    public static final String UPDATA = "https://github.com/zerorooot/nap6/releases/latest";
 }
